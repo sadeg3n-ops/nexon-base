@@ -1,0 +1,203 @@
+import { motion } from 'framer-motion';
+import { Button } from '../components/Button';
+import { Check } from 'lucide-react';
+
+export function Pricing() {
+  const packs = [
+    {
+      name: 'Web de captación',
+      price: '1.099 €',
+      text: 'La base para captar mejor y responder mejor.',
+      includes: [
+        'Página enfocada a captación',
+        'Formulario claro',
+        'Botón de WhatsApp',
+        'Estructura pensada para convertir'
+      ],
+      cta: 'Quiero empezar por la web',
+      highlight: false
+    },
+    {
+      name: 'Sistema de captación',
+      price: '2.597 €',
+      text: 'Para negocios que necesitan más orden, seguimiento y reservas.',
+      includes: [
+        'Web de captación',
+        'Seguimiento de oportunidades',
+        'Reservas online'
+      ],
+      cta: 'Quiero este sistema',
+      highlight: true
+    },
+    {
+      name: 'Sistema completo',
+      price: '4.495 €',
+      text: 'La opción más completa para captar, ordenar y automatizar.',
+      includes: [
+        'Web de captación',
+        'Seguimiento de oportunidades',
+        'Reservas online',
+        'Emails automáticos',
+        'Pagos online',
+        'SEO / GEO / AEO'
+      ],
+      cta: 'Quiero el sistema completo',
+      highlight: false
+    }
+  ];
+
+  const scrollToAudit = () => {
+    document.getElementById('diagnostico')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 40 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring' as const, bounce: 0.2, duration: 0.8 } }
+  };
+
+  const secondaryBlockVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring' as const, bounce: 0, duration: 0.8, delay: 0.6 } }
+  };
+
+  return (
+    <section id="precios" className="py-24 px-6 md:px-12 lg:px-24">
+      <div className="max-w-7xl mx-auto">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-3xl mx-auto mb-16"
+        >
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+            Empieza por la base y amplía cuando tenga sentido
+          </h2>
+          <p className="text-lg text-gray-400">
+            Tres formas de empezar, según tu punto de partida.
+          </p>
+        </motion.div>
+
+        {/* Pricing Cards */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid md:grid-cols-3 gap-8 items-stretch mb-12"
+        >
+          {packs.map((pack, index) => (
+            <motion.div 
+              key={index}
+              variants={cardVariants}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className={`flex flex-col rounded-3xl p-8 relative overflow-hidden ${
+                pack.highlight 
+                  ? 'bg-gradient-to-b from-ai-purple/10 to-transparent border-2 border-ai-purple shadow-[0_0_30px_rgba(124,58,237,0.15)] md:-mt-4 md:mb-4 z-10' 
+                  : 'bg-white/[0.02] border border-white/5 backdrop-blur-md'
+              }`}
+            >
+              {pack.highlight && (
+                <div className="absolute top-0 right-0 w-32 h-32 bg-ai-blue/10 rounded-full filter blur-[40px]"></div>
+              )}
+              <h3 className="text-lg font-semibold text-white mb-2 relative z-10">{pack.name}</h3>
+              <div className="text-4xl font-bold text-white mb-4 relative z-10">{pack.price}</div>
+              <p className="text-gray-400 mb-8 relative z-10">{pack.text}</p>
+              
+              <ul className="space-y-4 mb-8 relative z-10 flex-grow">
+                {pack.includes.map((item, i) => (
+                  <li key={i} className="flex gap-3 text-sm text-gray-300">
+                    <Check size={18} className={pack.highlight ? "text-ai-purple shrink-0" : "text-gray-500 shrink-0"} />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              
+              <Button 
+                onClick={scrollToAudit}
+                className={`w-full py-3 relative z-10 transition-transform active:scale-95 ${
+                  pack.highlight
+                    ? 'bg-white text-black hover:bg-gray-100 hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.4)]'
+                    : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
+                }`}
+              >
+                {pack.cta}
+              </Button>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="text-center text-gray-500 text-sm font-medium mb-16 pb-8 border-b border-white/5"
+        >
+          También puedes empezar por la web y añadir lo demás más adelante.
+        </motion.div>
+
+        {/* Secondary Block */}
+        <motion.div 
+          variants={secondaryBlockVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid md:grid-cols-2 gap-12 bg-white/[0.01] border border-white/5 rounded-2xl p-8 md:p-12 backdrop-blur-sm"
+        >
+          {/* Column 1: Modules */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-6">Módulos opcionales</h3>
+            <ul className="space-y-4">
+              {[
+                { n: "Seguimiento de oportunidades", p: "1.099 €" },
+                { n: "Reservas online", p: "599 €" },
+                { n: "Emails automáticos", p: "599 €" },
+                { n: "Pagos online", p: "699 €" }
+              ].map((mod, i) => (
+                <li key={i} className="flex justify-between border-b border-white/5 pb-2 transition-colors hover:border-white/20">
+                  <span className="text-gray-300">{mod.n}</span>
+                  <span className="text-gray-400 font-medium">{mod.p}</span>
+                </li>
+              ))}
+              <li className="flex justify-between transition-colors hover:text-white">
+                <span className="text-gray-300">SEO / GEO / AEO</span>
+                <span className="text-gray-400 font-medium">900 €</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 2: Maintenance */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-2">Mantenimiento y soporte</h3>
+            <div className="text-2xl font-bold text-white mb-4">350 € <span className="text-sm font-normal text-gray-500">/ mes</span></div>
+            <p className="text-gray-400 text-sm mb-6">
+              Para que el sistema siga funcionando sin que tengas que ocuparte de la parte técnica.
+            </p>
+            <ul className="space-y-3">
+              {[
+                "Seguridad y soporte",
+                "Copias de seguridad",
+                "Mantenimiento del sistema",
+                "Integraciones y pequeños cambios"
+              ].map((feature, i) => (
+                <li key={i} className="flex gap-3 text-sm text-gray-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-ai-purple/50 mt-2 absolute w-1.5 h-1.5 rounded-full animate-pulse transition-all"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-ai-blue mt-2"></span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
+        
+      </div>
+    </section>
+  );
+}
