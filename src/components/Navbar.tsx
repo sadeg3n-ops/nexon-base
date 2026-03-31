@@ -13,7 +13,7 @@ export function Navbar() {
           <img 
             src={logo} 
             alt="Nexo Base" 
-            className="h-12 md:h-[60px] w-auto object-contain opacity-90 hover:opacity-100 transition-opacity" 
+            className="h-12 md:h-[60px] w-auto object-contain opacity-90 hover:opacity-100 transition-opacity mix-blend-screen" 
           />
         </div>
         

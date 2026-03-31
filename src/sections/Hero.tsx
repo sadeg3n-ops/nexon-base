@@ -29,7 +29,7 @@ export function Hero() {
   };
 
   return (
-    <section className="min-h-[calc(100dvh-5rem)] py-12 md:py-16 flex flex-col justify-center px-6 md:px-12 lg:px-24">
+    <section className="min-h-min lg:min-h-[calc(100dvh-5rem)] pt-24 pb-16 lg:py-16 flex flex-col justify-center px-6 md:px-12 lg:px-24">
       <div className="w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         
         {/* Left Column: Copy */}
@@ -66,7 +66,7 @@ export function Hero() {
         </motion.div>
 
         {/* Right Column: Visual Component */}
-        <div className="relative w-full aspect-square md:aspect-auto md:h-[600px] flex items-center justify-center">
+        <div className="hidden lg:flex relative w-full h-[600px] items-center justify-center">
           <div className="absolute inset-0 bg-gradient-to-br from-ai-purple/20 to-ai-blue/20 rounded-full blur-[80px] z-[-1]"></div>
           
           <motion.div 
