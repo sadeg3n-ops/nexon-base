@@ -1,19 +1,205 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/Button';
 import { Check, Loader2, RefreshCw } from 'lucide-react';
 
 export function DiagnosticOffer() {
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim() ?? '';
+  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetIdRef = useRef<string | number | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    message: '',
+    privacyAccepted: false,
+    website: '',
+  });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [isPreparing, setIsPreparing] = useState(true);
+  const [formToken, setFormToken] = useState('');
+  const [challengeRequired, setChallengeRequired] = useState(false);
+  const [turnstileReady, setTurnstileReady] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [errorMessage, setErrorMessage] = useState('Ha ocurrido un error. Vuelve a intentarlo en unos segundos.');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData((current) => ({
+      ...current,
+      [name]: checked,
+    }));
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      email: '',
+      company: '',
+      message: '',
+      privacyAccepted: false,
+      website: '',
+    });
+  };
+
+  const resetTurnstile = () => {
+    setTurnstileToken('');
+    if (window.turnstile && turnstileWidgetIdRef.current !== null) {
+      window.turnstile.reset(turnstileWidgetIdRef.current);
+    }
+  };
+
+  const prepareFormSession = async () => {
+    setIsPreparing(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      const result = (await response.json()) as {
+        formToken?: string;
+        challengeRequired?: boolean;
+        error?: string;
+      };
+
+      if (!response.ok || !result.formToken) {
+        throw new Error(result.error || 'El formulario no está disponible ahora mismo.');
+      }
+
+      setFormToken(result.formToken);
+      setChallengeRequired(Boolean(result.challengeRequired));
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'El formulario no está disponible ahora mismo. Vuelve a intentarlo más tarde.'
+      );
+      setFormToken('');
+    } finally {
+      setIsPreparing(false);
+    }
+  };
+
+  useEffect(() => {
+    void prepareFormSession();
+  }, []);
+
+  useEffect(() => {
+    if (!turnstileSiteKey) {
+      return;
+    }
+
+    if (window.turnstile) {
+      setTurnstileReady(true);
+      return;
+    }
+
+    const existingScript = document.querySelector<HTMLScriptElement>('script[data-turnstile-script="true"]');
+    if (existingScript) {
+      existingScript.addEventListener('load', () => setTurnstileReady(true), { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.defer = true;
+    script.dataset.turnstileScript = 'true';
+    script.addEventListener('load', () => setTurnstileReady(true), { once: true });
+    document.head.appendChild(script);
+
+    return () => {
+      script.removeEventListener('load', () => setTurnstileReady(true));
+    };
+  }, [turnstileSiteKey]);
+
+  useEffect(() => {
+    if (!turnstileSiteKey || !turnstileReady || !turnstileContainerRef.current || !window.turnstile) {
+      return;
+    }
+
+    if (turnstileWidgetIdRef.current !== null) {
+      return;
+    }
+
+    turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+      sitekey: turnstileSiteKey,
+      theme: 'dark',
+      callback: (token) => setTurnstileToken(token),
+      'expired-callback': () => setTurnstileToken(''),
+      'error-callback': () => setTurnstileToken(''),
+    });
+  }, [turnstileSiteKey, turnstileReady]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formToken) {
+      setStatus('error');
+      setErrorMessage('El formulario se está preparando. Espera unos segundos y vuelve a intentarlo.');
+      return;
+    }
+
+    if (challengeRequired && !turnstileSiteKey) {
+      setStatus('error');
+      setErrorMessage('El formulario no está disponible ahora mismo. Vuelve a intentarlo más tarde.');
+      return;
+    }
+
+    if (challengeRequired && !turnstileToken) {
+      setStatus('error');
+      setErrorMessage('Completa la verificación antispam antes de enviar la solicitud.');
+      return;
+    }
+
+    setErrorMessage('Ha ocurrido un error. Vuelve a intentarlo en unos segundos.');
     setStatus('loading');
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          formToken,
+          turnstileToken,
+        }),
+      });
+
+      const result = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(result.error || 'No se pudo enviar la solicitud.');
+      }
+
       setStatus('success');
-    }, 1500);
+      resetForm();
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'No se pudo enviar la solicitud.');
+    } finally {
+      resetTurnstile();
+      await prepareFormSession();
+    }
   };
 
   const listVariants = {
@@ -137,18 +323,40 @@ export function DiagnosticOffer() {
                     onSubmit={handleSubmit} 
                     className="space-y-6 w-full"
                   >
+                    <input
+                      type="text"
+                      name="website"
+                      value={formData.website}
+                      onChange={handleInputChange}
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="hidden"
+                    />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label htmlFor="name" className="text-sm font-medium text-gray-300">Nombre</label>
                         <input 
-                          required id="name" type="text" placeholder="Tu nombre" 
+                          required
+                          id="name"
+                          name="name"
+                          type="text"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          placeholder="Tu nombre" 
                           className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-ai-purple focus:ring-1 focus:ring-ai-purple transition-colors"
                         />
                       </div>
                       <div className="space-y-2">
                         <label htmlFor="email" className="text-sm font-medium text-gray-300">Email</label>
                         <input 
-                          required id="email" type="email" placeholder="tu@email.com" 
+                          required
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          placeholder="tu@email.com" 
                           className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-ai-purple focus:ring-1 focus:ring-ai-purple transition-colors"
                         />
                       </div>
@@ -157,7 +365,13 @@ export function DiagnosticOffer() {
                     <div className="space-y-2">
                       <label htmlFor="company" className="text-sm font-medium text-gray-300">Empresa</label>
                       <input 
-                        required id="company" type="text" placeholder="Nombre de tu empresa" 
+                        required
+                        id="company"
+                        name="company"
+                        type="text"
+                        value={formData.company}
+                        onChange={handleInputChange}
+                        placeholder="Nombre de tu empresa" 
                         className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-ai-purple focus:ring-1 focus:ring-ai-purple transition-colors"
                       />
                     </div>
@@ -165,27 +379,80 @@ export function DiagnosticOffer() {
                     <div className="space-y-2">
                       <label htmlFor="message" className="text-sm font-medium text-gray-300">¿Qué está fallando ahora mismo en tu captación o seguimiento?</label>
                       <textarea 
-                        required id="message" rows={4} placeholder="Cuéntame qué está fallando o dónde se está perdiendo tiempo" 
+                        required
+                        id="message"
+                        name="message"
+                        rows={4}
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        placeholder="Cuéntame qué está fallando o dónde se está perdiendo tiempo" 
                         className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-ai-purple focus:ring-1 focus:ring-ai-purple transition-colors resize-none"
                       ></textarea>
                     </div>
 
+                    <label className="group inline-flex max-w-full items-start gap-3 text-[0.82rem] leading-5 text-white/56">
+                      <input
+                        required
+                        id="privacyAccepted"
+                        name="privacyAccepted"
+                        type="checkbox"
+                        checked={formData.privacyAccepted}
+                        onChange={handleCheckboxChange}
+                        className="peer sr-only"
+                      />
+                      <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[0.45rem] border border-white/14 bg-white/[0.03] text-transparent transition-all duration-200 peer-checked:border-white/30 peer-checked:bg-white/[0.08] peer-checked:text-white/88 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-white/60 group-hover:border-white/22">
+                        <Check size={11} strokeWidth={2.6} aria-hidden="true" />
+                      </span>
+                      <span>
+                        He leído y acepto la{' '}
+                        <a
+                          href="/politica-privacidad/"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-white/72 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60 rounded-sm"
+                        >
+                          Política de privacidad
+                        </a>
+                        .
+                      </span>
+                    </label>
+
                     {status === 'error' && (
                       <div className="p-4 rounded bg-red-500/10 text-red-400 text-sm">
-                        Ha ocurrido un error. Vuelve a intentarlo en unos segundos.
+                        {errorMessage}
+                      </div>
+                    )}
+
+                    {(challengeRequired || turnstileSiteKey) && (
+                      <div className="space-y-3">
+                        <div ref={turnstileContainerRef} className="min-h-[65px]" />
+                        {challengeRequired && !turnstileSiteKey && (
+                          <p className="text-sm text-red-400">
+                            Falta configurar la protección antispam del formulario.
+                          </p>
+                        )}
                       </div>
                     )}
 
                     <div className="pt-2 transition-transform active:scale-[0.98]">
                       <Button 
                         type="submit" 
-                        disabled={status === 'loading'}
+                        disabled={
+                          status === 'loading' ||
+                          isPreparing ||
+                          (challengeRequired && !turnstileToken) ||
+                          (challengeRequired && !turnstileSiteKey)
+                        }
                         className="w-full bg-[#0a0a0b]/80 text-white backdrop-blur-xl border border-white/10 hover:border-ai-purple/50 shadow-[0_0_20px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_-5px_rgba(124,58,237,0.4)] transition-all duration-300 transform hover:scale-[1.02] active:scale-95 group font-medium"
                       >
-                        {status === 'loading' ? <Loader2 className="animate-spin" /> : 'Solicitar diagnóstico gratuito'}
+                        {status === 'loading' || isPreparing ? (
+                          <Loader2 className="animate-spin" />
+                        ) : (
+                          'Solicitar diagnóstico gratuito'
+                        )}
                       </Button>
-                      <p className="text-center text-xs text-gray-500 mt-4">
-                        Nada de spam. Solo lo usaremos para responder a tu solicitud.
+                      <p className="text-center text-xs leading-5 text-gray-500 mt-4">
+                        Nada de spam. Solo usaremos tus datos para responder a tu solicitud.
                       </p>
                     </div>
                   </motion.form>
