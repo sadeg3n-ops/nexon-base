@@ -4,16 +4,16 @@ import { Check, X } from 'lucide-react';
 export function WhoItsFor() {
   const forWho = [
     "Tu web actual no está pensada para convertir",
-    "Te entran contactos por varios canales y no tienes una vista clara",
+    "Te entran contactos por varios canales y es difícil tener una visión clara",
     "El seguimiento depende demasiado de WhatsApp o procesos manuales",
     "Quieres una base seria para crecer sin improvisar"
   ];
 
   const notForWho = [
     "Solo buscas una web bonita",
-    "No quieres revisar procesos ni cambiar hábitos",
+    "No quieres revisar procesos ni cambiar sistemas",
     "Tu negocio aún no tiene un flujo real de oportunidades",
-    "Esperas resultados sin implementación"
+    "Esperas resultados sin cambios"
   ];
 
   const containerVariants = {

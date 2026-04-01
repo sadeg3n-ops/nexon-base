@@ -3,6 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/Button';
 import { Check, Loader2, RefreshCw } from 'lucide-react';
 
+async function readJsonResponse<T>(response: Response): Promise<T | null> {
+  const rawBody = await response.text();
+
+  if (!rawBody) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(rawBody) as T;
+  } catch {
+    return null;
+  }
+}
+
 export function DiagnosticOffer() {
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim() ?? '';
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
@@ -71,14 +85,14 @@ export function DiagnosticOffer() {
         },
       });
 
-      const result = (await response.json()) as {
+      const result = await readJsonResponse<{
         formToken?: string;
         challengeRequired?: boolean;
         error?: string;
-      };
+      }>(response);
 
-      if (!response.ok || !result.formToken) {
-        throw new Error(result.error || 'El formulario no está disponible ahora mismo.');
+      if (!response.ok || !result?.formToken) {
+        throw new Error(result?.error || 'El formulario no está disponible ahora mismo.');
       }
 
       setFormToken(result.formToken);
@@ -185,10 +199,10 @@ export function DiagnosticOffer() {
         }),
       });
 
-      const result = (await response.json()) as { error?: string };
+      const result = await readJsonResponse<{ error?: string }>(response);
 
       if (!response.ok) {
-        throw new Error(result.error || 'No se pudo enviar la solicitud.');
+        throw new Error(result?.error || 'No se pudo enviar la solicitud.');
       }
 
       setStatus('success');
@@ -390,7 +404,7 @@ export function DiagnosticOffer() {
                       ></textarea>
                     </div>
 
-                    <label className="group inline-flex max-w-full items-start gap-3 text-[0.82rem] leading-5 text-white/56">
+                    <div className="flex max-w-full items-start gap-3 text-[0.82rem] leading-5 text-white/56">
                       <input
                         required
                         id="privacyAccepted"
@@ -398,12 +412,12 @@ export function DiagnosticOffer() {
                         type="checkbox"
                         checked={formData.privacyAccepted}
                         onChange={handleCheckboxChange}
-                        className="peer sr-only"
+                        className="mt-0.5 h-[17px] w-[17px] shrink-0 cursor-pointer rounded-[0.3rem] border border-white/18 bg-black/35 accent-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
                       />
-                      <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[0.45rem] border border-white/14 bg-white/[0.03] text-transparent transition-all duration-200 peer-checked:border-white/30 peer-checked:bg-white/[0.08] peer-checked:text-white/88 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-white/60 group-hover:border-white/22">
-                        <Check size={11} strokeWidth={2.6} aria-hidden="true" />
-                      </span>
-                      <span>
+                      <label
+                        htmlFor="privacyAccepted"
+                        className="cursor-pointer"
+                      >
                         He leído y acepto la{' '}
                         <a
                           href="/politica-privacidad/"
@@ -414,8 +428,8 @@ export function DiagnosticOffer() {
                           Política de privacidad
                         </a>
                         .
-                      </span>
-                    </label>
+                      </label>
+                    </div>
 
                     {status === 'error' && (
                       <div className="p-4 rounded bg-red-500/10 text-red-400 text-sm">

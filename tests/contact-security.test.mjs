@@ -1,20 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import {
+  checkBootstrapRateLimit,
   checkDuplicateSubmission,
   checkRateLimit,
   classifyAbusiveLanguage,
   createContactStores,
   createEmailContent,
   createFormSession,
+  handleContactGet,
   handleContactPost,
   isAllowedOrigin,
   scoreSubmissionForAbuse,
   validateSubmission,
   verifyFormSession,
 } from '../api/contact.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const repoRoot = path.resolve(__dirname, '..');
 
 const baseSubmission = {
   name: 'Antonio Gasco',
@@ -267,6 +275,23 @@ test('rate limit and duplicate checks trip on bursts and identical replays', () 
   );
 });
 
+test('bootstrap limiter protects GET /api/contact in Hobby fallback mode', () => {
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  const bootstrapStore = new Map();
+
+  for (let index = 0; index < 6; index += 1) {
+    assert.equal(
+      checkBootstrapRateLimit('203.0.113.9', now + index * 1000, bootstrapStore).ok,
+      true
+    );
+  }
+
+  assert.equal(
+    checkBootstrapRateLimit('203.0.113.9', now + 7000, bootstrapStore).ok,
+    false
+  );
+});
+
 test('origin allowlist accepts expected hosts and rejects hostile origins', () => {
   const env = {
     NODE_ENV: 'production',
@@ -280,8 +305,8 @@ test('origin allowlist accepts expected hosts and rejects hostile origins', () =
 
 test('client env usage does not expose server-side contact secrets', async () => {
   const clientFiles = [
-    '/Users/antonio/Downloads/NEXO BASE/src/sections/DiagnosticOffer.tsx',
-    '/Users/antonio/Downloads/NEXO BASE/src/vite-env.d.ts',
+    path.join(repoRoot, 'src/sections/DiagnosticOffer.tsx'),
+    path.join(repoRoot, 'src/vite-env.d.ts'),
   ];
 
   const contents = await Promise.all(clientFiles.map((file) => fs.readFile(file, 'utf8')));
@@ -291,6 +316,83 @@ test('client env usage does not expose server-side contact secrets', async () =>
   assert.doesNotMatch(combined, /TURNSTILE_SECRET_KEY/);
   assert.doesNotMatch(combined, /SMTP_PASS/);
   assert.doesNotMatch(combined, /CONTACT_FORM_SECRET/);
+});
+
+test('handleContactGet enables challengeRequired when both Turnstile keys exist', async () => {
+  const env = createTestEnv({
+    NODE_ENV: 'production',
+    TURNSTILE_SECRET_KEY: 'turnstile-secret',
+    VITE_TURNSTILE_SITE_KEY: 'turnstile-site-key',
+  });
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  const request = new Request('https://nexobase.dev/api/contact', {
+    method: 'GET',
+    headers: {
+      'X-Forwarded-For': '203.0.113.9',
+      'X-Real-Ip': '203.0.113.9',
+    },
+  });
+
+  const response = await handleContactGet(request, { env, now, stores });
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.challengeRequired, true);
+  assert.match(response.headers.get('set-cookie') || '', /SameSite=Strict/);
+});
+
+test('handleContactGet rejects misconfigured Turnstile and rate-limits GET bursts', async () => {
+  const misconfiguredEnv = createTestEnv({
+    NODE_ENV: 'production',
+    TURNSTILE_SECRET_KEY: 'turnstile-secret',
+  });
+  const misconfiguredResponse = await handleContactGet(
+    new Request('https://nexobase.dev/api/contact', {
+      method: 'GET',
+      headers: {
+        'X-Forwarded-For': '203.0.113.9',
+        'X-Real-Ip': '203.0.113.9',
+      },
+    }),
+    {
+      env: misconfiguredEnv,
+      now: Date.UTC(2026, 3, 1, 11, 0, 0),
+      stores: createContactStores(),
+    }
+  );
+
+  assert.equal(misconfiguredResponse.status, 503);
+  assert.deepEqual(await misconfiguredResponse.json(), {
+    error: 'No se pudo enviar la solicitud ahora mismo. Inténtalo de nuevo en unos minutos.',
+  });
+
+  const env = createTestEnv({ NODE_ENV: 'production' });
+  const stores = createContactStores();
+
+  let lastResponse;
+  for (let index = 0; index < 7; index += 1) {
+    lastResponse = await handleContactGet(
+      new Request('https://nexobase.dev/api/contact', {
+        method: 'GET',
+        headers: {
+          'X-Forwarded-For': '203.0.113.10',
+          'X-Real-Ip': '203.0.113.10',
+        },
+      }),
+      {
+        env,
+        now: Date.UTC(2026, 3, 1, 11, 0, index),
+        stores,
+      }
+    );
+  }
+
+  assert.equal(lastResponse.status, 429);
+  assert.equal(lastResponse.headers.get('retry-after'), '60');
+  assert.deepEqual(await lastResponse.json(), {
+    error: 'No se pudo enviar la solicitud ahora mismo. Inténtalo de nuevo en unos minutos.',
+  });
 });
 
 test('handleContactPost rejects missing Origin with a generic response', async () => {
@@ -544,6 +646,44 @@ test('handleContactPost routes review traffic to quarantine instead of the main 
   assert.equal(deliveries.length, 1);
   assert.equal(deliveries[0].to, 'review@example.com');
   assert.equal(deliveries[0].subject, 'Revisión manual: solicitud de diagnóstico');
+});
+
+test('handleContactPost enforces Turnstile verification when keys exist', async () => {
+  const env = createTestEnv({
+    NODE_ENV: 'production',
+    TURNSTILE_SECRET_KEY: 'turnstile-secret',
+    VITE_TURNSTILE_SITE_KEY: 'turnstile-site-key',
+  });
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  const request = createSignedPostRequest(
+    {
+      turnstileToken: '',
+    },
+    env,
+    now
+  );
+  let verifierCalled = false;
+
+  const response = await handleContactPost(request, {
+    env,
+    now,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: false }),
+    turnstileVerifier: async (token) => {
+      verifierCalled = true;
+      return { ok: Boolean(token), reason: token ? 'turnstile_verified' : 'turnstile_missing' };
+    },
+    mailSender: async () => {
+      throw new Error('mailSender should not be called when Turnstile fails');
+    },
+  });
+
+  assert.equal(verifierCalled, true);
+  assert.equal(response.status, 403);
+  assert.deepEqual(await response.json(), {
+    error: 'No se pudo enviar la solicitud ahora mismo. Inténtalo de nuevo en unos minutos.',
+  });
 });
 
 test('handleContactPost returns 429 when the firewall rate limiter blocks the request', async () => {

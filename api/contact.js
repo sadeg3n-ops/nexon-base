@@ -8,6 +8,10 @@ const FORM_COOKIE_NAME = 'nexo_contact_session';
 const MIN_SUBMIT_DELAY_MS = 4000;
 const FORM_TOKEN_TTL_MS = 60 * 60 * 1000;
 const DUPLICATE_WINDOW_MS = 6 * 60 * 60 * 1000;
+const BOOTSTRAP_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const BOOTSTRAP_RATE_LIMIT_MAX = 20;
+const BOOTSTRAP_BURST_WINDOW_MS = 60 * 1000;
+const BOOTSTRAP_BURST_LIMIT_MAX = 6;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 const BURST_WINDOW_MS = 60 * 1000;
@@ -129,6 +133,7 @@ export const runtime = 'nodejs';
 
 export function createContactStores() {
   return {
+    bootstrapRateLimit: new Map(),
     rateLimit: new Map(),
     duplicates: new Map(),
     usedTokens: new Map(),
@@ -709,18 +714,41 @@ export function scoreSubmissionForAbuse(submission, env = process.env) {
   };
 }
 
-export function checkRateLimit(ip, now = Date.now(), rateLimitStore = contactStores.rateLimit) {
+export function checkRateLimit(
+  ip,
+  now = Date.now(),
+  rateLimitStore = contactStores.rateLimit,
+  {
+    windowMs = RATE_LIMIT_WINDOW_MS,
+    max = RATE_LIMIT_MAX,
+    burstWindowMs = BURST_WINDOW_MS,
+    burstMax = BURST_LIMIT_MAX,
+  } = {}
+) {
   const key = ip || 'unknown';
-  pruneStore(rateLimitStore, RATE_LIMIT_WINDOW_MS, now);
+  pruneStore(rateLimitStore, windowMs, now);
   const timestamps = rateLimitStore.get(key) || [];
-  const recentBurst = timestamps.filter((timestamp) => now - timestamp <= BURST_WINDOW_MS);
+  const recentBurst = timestamps.filter((timestamp) => now - timestamp <= burstWindowMs);
 
-  if (recentBurst.length >= BURST_LIMIT_MAX || timestamps.length >= RATE_LIMIT_MAX) {
+  if (recentBurst.length >= burstMax || timestamps.length >= max) {
     return { ok: false, retryAfterSeconds: 60 };
   }
 
   rateLimitStore.set(key, [...timestamps, now]);
   return { ok: true };
+}
+
+export function checkBootstrapRateLimit(
+  ip,
+  now = Date.now(),
+  rateLimitStore = contactStores.bootstrapRateLimit
+) {
+  return checkRateLimit(ip, now, rateLimitStore, {
+    windowMs: BOOTSTRAP_RATE_LIMIT_WINDOW_MS,
+    max: BOOTSTRAP_RATE_LIMIT_MAX,
+    burstWindowMs: BOOTSTRAP_BURST_WINDOW_MS,
+    burstMax: BOOTSTRAP_BURST_LIMIT_MAX,
+  });
 }
 
 async function applyRateLimit(request, { env = process.env, ip, now = Date.now(), stores = contactStores, firewallRateLimiter = checkFirewallRateLimit } = {}) {
@@ -993,11 +1021,30 @@ function buildMailMessage({ submission, source, spamVerdict, spamReasons, ipHash
   };
 }
 
-export async function handleContactGet(request, { env = process.env, now = Date.now() } = {}) {
+export async function handleContactGet(
+  request,
+  { env = process.env, now = Date.now(), stores = contactStores } = {}
+) {
   const turnstileConfig = getTurnstileConfiguration(env);
 
   if (turnstileConfig.misconfigured) {
     return jsonResponse(503, { error: PUBLIC_RETRY_MESSAGE });
+  }
+
+  const bootstrapRateLimit = checkBootstrapRateLimit(
+    getClientIp(request),
+    now,
+    stores.bootstrapRateLimit
+  );
+
+  if (!bootstrapRateLimit.ok) {
+    return jsonResponse(
+      429,
+      { error: PUBLIC_RETRY_MESSAGE },
+      {
+        headers: { 'Retry-After': String(bootstrapRateLimit.retryAfterSeconds) },
+      }
+    );
   }
 
   try {

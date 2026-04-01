@@ -60,7 +60,7 @@ export function Hero() {
             </Button>
             <div className="flex flex-col gap-1.5 mt-2 sm:mt-0 items-start">
               <span className="text-sm font-medium text-gray-300 flex items-center gap-2"><CheckCircle2 size={16} className="text-ai-purple shrink-0" /> Respuesta en 24h</span>
-              <span className="text-sm font-medium text-gray-400 flex items-center gap-2"><CheckCircle2 size={16} className="text-ai-blue shrink-0" /> Te diré por dónde empezaría</span>
+              <span className="text-sm font-medium text-gray-400 flex items-center gap-2"><CheckCircle2 size={16} className="text-ai-blue shrink-0" /> Te diremos por dónde empezaríamos</span>
             </div>
           </motion.div>
         </motion.div>
@@ -91,7 +91,7 @@ export function Hero() {
               {[
                 { icon: <Globe size={24} />, title: "Web de captación", copy: "Página clara para que contactar sea fácil.", color: "text-ai-purple", bg: "bg-ai-purple/10", left: "0" },
                 { icon: <BarChart2 size={24} />, title: "Seguimiento de oportunidades", copy: "Visibilidad sobre cada contacto y el siguiente paso.", color: "text-ai-blue", bg: "bg-ai-blue/10", left: "1rem" },
-                { icon: <Calendar size={24} />, title: "Reservas online", copy: "Menos fricción al reservar, más tiempo para el equipo.", color: "text-emerald-500", bg: "bg-emerald-500/10", left: "2rem" },
+                { icon: <Calendar size={24} />, title: "Reservas online", copy: "Reservas más fáciles, más tiempo para el equipo.", color: "text-emerald-500", bg: "bg-emerald-500/10", left: "2rem" },
                 { icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/><polyline points="14 2 14 8 20 8"/><path d="M2 15h10"/><path d="M9 18l3-3-3-3"/></svg>, title: "Automatizaciones y pagos", copy: "Recordatorios, confirmaciones y cobros sin caos.", color: "text-pink-500", bg: "bg-pink-500/10", left: "3rem" },
               ].map((layer, i) => (
                 <motion.div 
