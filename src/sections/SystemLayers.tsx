@@ -56,7 +56,7 @@ export function SystemLayers() {
               Empieza por la base. Amplía cuando de verdad tenga sentido.
             </h2>
             <p className="text-lg text-gray-400">
-              Montamos primero lo que más impacto tiene. Lo demás se añade cuando el negocio lo pide.
+              Montamos primero lo que más impacto tiene. Lo demás se añade cuando el negocio lo necesita.
             </p>
           </div>
         </motion.div>

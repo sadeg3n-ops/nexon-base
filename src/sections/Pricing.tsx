@@ -80,7 +80,7 @@ export function Pricing() {
             Nuestros Servicios
           </h2>
           <p className="text-lg text-gray-400">
-            Diferentes puntos de partida, diseñados para solucionar problemas específicos.
+            Diferentes puntos de partida, pensados para resolver problemas concretos.
           </p>
         </motion.div>
 

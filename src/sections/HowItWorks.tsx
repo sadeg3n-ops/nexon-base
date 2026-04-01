@@ -16,7 +16,7 @@ export function HowItWorks() {
     {
       num: '01',
       title: 'Detectamos dónde se rompe',
-      text: 'Revisamos captación, seguimiento y puntos de fricción reales.'
+      text: 'Revisamos captación, seguimiento y atascos reales.'
     },
     {
       num: '02',

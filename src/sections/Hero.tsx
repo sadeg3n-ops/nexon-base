@@ -46,7 +46,7 @@ export function Hero() {
           
           <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-6xl lg:text-[4rem] font-bold text-white leading-[1.1] tracking-tight max-w-[14ch] lg:max-w-none">
             Tu web debería captar.<br/>
-            <span className="text-gray-400">Tu sistema debería evitar que se pierdan oportunidades.</span>
+            <span className="text-gray-400">Tu sistema debería evitar que se escapen oportunidades.</span>
           </motion.h1>
 
           <motion.p variants={itemVariants} className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-xl">
@@ -89,7 +89,7 @@ export function Hero() {
               animate="show"
             >
               {[
-                { icon: <Globe size={24} />, title: "Web de captación", copy: "Página clara para que el cliente contacte fácil.", color: "text-ai-purple", bg: "bg-ai-purple/10", left: "0" },
+                { icon: <Globe size={24} />, title: "Web de captación", copy: "Página clara para que contactar sea fácil.", color: "text-ai-purple", bg: "bg-ai-purple/10", left: "0" },
                 { icon: <BarChart2 size={24} />, title: "Seguimiento de oportunidades", copy: "Visibilidad sobre cada contacto y el siguiente paso.", color: "text-ai-blue", bg: "bg-ai-blue/10", left: "1rem" },
                 { icon: <Calendar size={24} />, title: "Reservas online", copy: "Menos fricción al reservar, más tiempo para el equipo.", color: "text-emerald-500", bg: "bg-emerald-500/10", left: "2rem" },
                 { icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/><polyline points="14 2 14 8 20 8"/><path d="M2 15h10"/><path d="M9 18l3-3-3-3"/></svg>, title: "Automatizaciones y pagos", copy: "Recordatorios, confirmaciones y cobros sin caos.", color: "text-pink-500", bg: "bg-pink-500/10", left: "3rem" },

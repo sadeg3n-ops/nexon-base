@@ -46,7 +46,7 @@ export function WhoItsFor() {
             Te entran contactos, pero el sistema no acompaña
           </h2>
           <p className="text-lg text-gray-400">
-            Si captación, seguimiento y reservas no están conectados, se enfría el contacto y se pierden oportunidades que ya habías conseguido.
+            Si captación, seguimiento y reservas no están conectados, el contacto se enfría y se pierden oportunidades que ya habías generado.
           </p>
         </motion.div>
 
