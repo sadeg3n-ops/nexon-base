@@ -1,8 +1,9 @@
 import crypto from 'node:crypto';
 import nodemailer from 'nodemailer';
+import { unstable_checkRateLimit as checkFirewallRateLimit } from '@vercel/firewall';
 
-const DEFAULT_TO_EMAIL = 'work.tonyg@gmail.com';
 const DEFAULT_ALLOWED_ORIGINS = ['https://nexobase.dev', 'https://www.nexobase.dev'];
+const DEFAULT_RATE_LIMIT_ID = 'contact-form';
 const FORM_COOKIE_NAME = 'nexo_contact_session';
 const MIN_SUBMIT_DELAY_MS = 4000;
 const FORM_TOKEN_TTL_MS = 60 * 60 * 1000;
@@ -24,6 +25,11 @@ const PUBLIC_INVALID_MESSAGE =
   'No se pudo enviar la solicitud. Revisa los campos e inténtalo otra vez.';
 const EMAIL_REGEX =
   /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+const BASE_RESPONSE_HEADERS = {
+  'Content-Type': 'application/json; charset=utf-8',
+  'Cache-Control': 'no-store',
+  'X-Content-Type-Options': 'nosniff',
+};
 const ALLOWED_FIELDS = new Set([
   'name',
   'email',
@@ -34,43 +40,113 @@ const ALLOWED_FIELDS = new Set([
   'formToken',
   'turnstileToken',
 ]);
-const PROFANITY_TERMS = [
-  'puta',
-  'puto',
-  'mierda',
-  'gilipollas',
-  'imbecil',
-  'imbécil',
-  'idiota',
-  'cabron',
-  'cabrón',
-  'fuck',
-  'shit',
-  'bitch',
-  'scam',
-  'estafa',
+const MODERATION_CHAR_MAP = {
+  '@': 'a',
+  '0': 'o',
+  '1': 'i',
+  '3': 'e',
+  '4': 'a',
+  '5': 's',
+  '7': 't',
+  '8': 'b',
+  '9': 'g',
+  '$': 's',
+  '!': 'i',
+  '+': 't',
+  '€': 'e',
+  '|': 'i',
+  '¡': 'i',
+  'а': 'a',
+  'е': 'e',
+  'о': 'o',
+  'р': 'p',
+  'с': 'c',
+  'у': 'y',
+  'х': 'x',
+  'і': 'i',
+  'ј': 'j',
+  'ѕ': 's',
+  'ԁ': 'd',
+  'һ': 'h',
+  'κ': 'k',
+  'ν': 'v',
+  'τ': 't',
+  'μ': 'm',
+};
+const DROP_ABUSE_PATTERNS = [
+  { value: 'hijo de puta', reason: 'abusive_phrase', type: 'phrase' },
+  { value: 'hija de puta', reason: 'abusive_phrase', type: 'phrase' },
+  { value: 'vete a la mierda', reason: 'abusive_phrase', type: 'phrase' },
+  { value: 'me cago en tu madre', reason: 'abusive_phrase', type: 'phrase' },
+  { value: 'te voy a matar', reason: 'violent_threat', type: 'phrase' },
+  { value: 'os voy a matar', reason: 'violent_threat', type: 'phrase' },
+  { value: 'te voy a reventar', reason: 'violent_threat', type: 'phrase' },
+  { value: 'os voy a reventar', reason: 'violent_threat', type: 'phrase' },
+  { value: 'gilipollas', reason: 'abusive_token', type: 'token' },
+  { value: 'subnormal', reason: 'abusive_token', type: 'token' },
+  { value: 'imbecil', reason: 'abusive_token', type: 'token' },
+  { value: 'idiota', reason: 'abusive_token', type: 'token' },
+  { value: 'cabron', reason: 'abusive_token', type: 'token' },
+  { value: 'mierda', reason: 'abusive_token', type: 'token' },
+  { value: 'puta', reason: 'abusive_token', type: 'token' },
+  { value: 'puto', reason: 'abusive_token', type: 'token' },
+  { value: 'zorra', reason: 'abusive_token', type: 'token' },
+  { value: 'fuck', reason: 'abusive_token', type: 'token' },
+  { value: 'shit', reason: 'abusive_token', type: 'token' },
+  { value: 'bitch', reason: 'abusive_token', type: 'token' },
+];
+const REVIEW_ABUSE_PATTERNS = [
+  { value: 'estafador', reason: 'hostile_accusation', type: 'token' },
+  { value: 'estafadores', reason: 'hostile_accusation', type: 'token' },
+  { value: 'timador', reason: 'hostile_accusation', type: 'token' },
+  { value: 'timadores', reason: 'hostile_accusation', type: 'token' },
+  { value: 'fraude', reason: 'hostile_accusation', type: 'token' },
+  { value: 'estafa', reason: 'hostile_accusation', type: 'token' },
+  { value: 'ladron', reason: 'hostile_accusation', type: 'token' },
+  { value: 'ladrones', reason: 'hostile_accusation', type: 'token' },
+  { value: 'os voy a denunciar', reason: 'legal_threat', type: 'phrase' },
+  { value: 'voy a denunciaros', reason: 'legal_threat', type: 'phrase' },
+  { value: 'te voy a denunciar', reason: 'legal_threat', type: 'phrase' },
+  { value: 'me habeis robado', reason: 'hostile_accusation', type: 'phrase' },
+  { value: 'hablare con mi abogado', reason: 'legal_threat', type: 'phrase' },
+  { value: 'demanda', reason: 'legal_threat', type: 'token' },
+  { value: 'denuncia', reason: 'legal_threat', type: 'token' },
+  { value: 'denunciar', reason: 'legal_threat', type: 'token' },
+  { value: 'abogado', reason: 'legal_threat', type: 'token' },
 ];
 
-const contactStores = globalThis.__nexobaseContactStores || {
-  rateLimit: new Map(),
-  duplicates: new Map(),
-  usedTokens: new Map(),
-};
+const contactStores = globalThis.__nexobaseContactStores || createContactStores();
 globalThis.__nexobaseContactStores = contactStores;
+
+export const runtime = 'nodejs';
+
+export function createContactStores() {
+  return {
+    rateLimit: new Map(),
+    duplicates: new Map(),
+    usedTokens: new Map(),
+  };
+}
 
 function isProductionEnvironment(env = process.env) {
   return env.VERCEL_ENV === 'production' || env.NODE_ENV === 'production';
 }
 
-function json(res, statusCode, payload, extraHeaders = {}) {
-  res.status(statusCode);
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-store');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  for (const [key, value] of Object.entries(extraHeaders)) {
-    res.setHeader(key, value);
+function jsonResponse(statusCode, payload, { headers = {}, cookies = [] } = {}) {
+  const responseHeaders = new Headers(BASE_RESPONSE_HEADERS);
+
+  for (const [key, value] of Object.entries(headers)) {
+    responseHeaders.set(key, value);
   }
-  res.send(JSON.stringify(payload));
+
+  for (const cookie of cookies) {
+    responseHeaders.append('Set-Cookie', cookie);
+  }
+
+  return new Response(JSON.stringify(payload), {
+    status: statusCode,
+    headers: responseHeaders,
+  });
 }
 
 function normalizeSingleLine(value) {
@@ -100,10 +176,6 @@ function normalizeMultiline(value) {
     .replace(/[ \t]*\n[ \t]*/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
-}
-
-function normalizeForAbuseChecks(value) {
-  return normalizeMultiline(value).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
 }
 
 function escapeHtml(value) {
@@ -144,12 +216,15 @@ function pruneStore(map, ttlMs, now) {
   }
 }
 
-function getOriginCandidates(env = process.env) {
-  const configuredOrigins = normalizeSingleLine(env.CONTACT_ALLOWED_ORIGINS)
+function parseCsvList(value) {
+  return normalizeSingleLine(value)
     .split(',')
-    .map((value) => value.trim())
+    .map((entry) => entry.trim())
     .filter(Boolean);
+}
 
+function getOriginCandidates(env = process.env) {
+  const configuredOrigins = parseCsvList(env.CONTACT_ALLOWED_ORIGINS);
   const previewOrigins = [
     env.VERCEL_URL ? `https://${env.VERCEL_URL}` : '',
     env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}` : '',
@@ -178,13 +253,13 @@ export function isAllowedOrigin(origin, env = process.env) {
   return getOriginCandidates(env).includes(origin);
 }
 
-function getTrustedSource(req, env = process.env) {
-  const originHeader = normalizeSingleLine(req.headers.origin);
+function getTrustedSource(request, env = process.env) {
+  const originHeader = normalizeSingleLine(request.headers.get('origin'));
   if (isAllowedOrigin(originHeader, env)) {
     return originHeader;
   }
 
-  const refererHeader = normalizeSingleLine(req.headers.referer);
+  const refererHeader = normalizeSingleLine(request.headers.get('referer'));
   if (!refererHeader) {
     return 'direct-request';
   }
@@ -197,18 +272,18 @@ function getTrustedSource(req, env = process.env) {
   }
 }
 
-function getClientIp(req) {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.trim()) {
+function getClientIp(request) {
+  const forwarded = normalizeSingleLine(request.headers.get('x-forwarded-for'));
+  if (forwarded) {
     return forwarded.split(',')[0].trim();
   }
 
-  const realIp = req.headers['x-real-ip'];
-  if (typeof realIp === 'string' && realIp.trim()) {
-    return realIp.trim();
+  const realIp = normalizeSingleLine(request.headers.get('x-real-ip'));
+  if (realIp) {
+    return realIp;
   }
 
-  return req.socket?.remoteAddress || 'unknown';
+  return 'unknown';
 }
 
 function getSecretOrNull(env = process.env) {
@@ -348,37 +423,29 @@ function rememberUsedToken(nonce, now = Date.now(), usedTokenStore = contactStor
   usedTokenStore.set(nonce, now);
 }
 
-function getRequestBodySize(req, body) {
-  const contentLengthHeader = req.headers['content-length'];
-  if (typeof contentLengthHeader === 'string' && /^\d+$/.test(contentLengthHeader)) {
-    return Number(contentLengthHeader);
+async function parseJsonBody(request) {
+  const contentLengthHeader = normalizeSingleLine(request.headers.get('content-length'));
+  if (contentLengthHeader && /^\d+$/.test(contentLengthHeader) && Number(contentLengthHeader) > MAX_BODY_BYTES) {
+    return { ok: false, reason: 'body_too_large' };
   }
 
-  if (typeof body === 'string') {
-    return Buffer.byteLength(body);
+  let rawBody;
+  try {
+    rawBody = await request.text();
+  } catch {
+    return { ok: false, reason: 'invalid_body' };
+  }
+
+  if (Buffer.byteLength(rawBody) > MAX_BODY_BYTES) {
+    return { ok: false, reason: 'body_too_large' };
   }
 
   try {
-    return Buffer.byteLength(JSON.stringify(body || {}));
+    const parsed = JSON.parse(rawBody);
+    return { ok: true, body: parsed };
   } catch {
-    return Number.MAX_SAFE_INTEGER;
+    return { ok: false, reason: 'invalid_json' };
   }
-}
-
-function parseJsonBody(req) {
-  if (typeof req.body === 'string') {
-    try {
-      return JSON.parse(req.body);
-    } catch {
-      return null;
-    }
-  }
-
-  if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) {
-    return req.body;
-  }
-
-  return null;
 }
 
 export function validateSubmission(body) {
@@ -440,14 +507,138 @@ export function validateSubmission(body) {
   };
 }
 
-export function scoreSubmissionForAbuse(submission) {
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function normalizeForModeration(value) {
+  const decomposed = normalizeMultiline(value).normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+  const canonical = Array.from(decomposed)
+    .map((char) => {
+      const lowerChar = char.toLowerCase();
+      return MODERATION_CHAR_MAP[lowerChar] || lowerChar;
+    })
+    .join('')
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const squashedBoundaryText = canonical.replace(/([a-z0-9])\1+/g, '$1');
+  const spaced = canonical.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const squashedSpaced = squashedBoundaryText.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+  return {
+    boundaryText: canonical,
+    squashedBoundaryText,
+    spaced,
+    squashedSpaced,
+  };
+}
+
+function getAllowlistTerms(env = process.env) {
+  return parseCsvList(env.PROFANITY_ALLOWLIST_TERMS);
+}
+
+function buildObfuscatedRegex(term, { global = false } = {}) {
+  const profile = normalizeForModeration(term);
+  const compactTerm = profile.spaced.replace(/ /g, '');
+  if (!compactTerm) {
+    return null;
+  }
+
+  const pattern = compactTerm
+    .split('')
+    .map((character) => escapeRegex(character))
+    .join('[^a-z0-9]*');
+
+  return new RegExp(`(?:^|[^a-z0-9])${pattern}(?:$|[^a-z0-9])`, global ? 'gu' : 'u');
+}
+
+function rebuildModerationProfile(boundaryText, squashedBoundaryText) {
+  return {
+    boundaryText: boundaryText.replace(/\s+/g, ' ').trim(),
+    squashedBoundaryText: squashedBoundaryText.replace(/\s+/g, ' ').trim(),
+    spaced: boundaryText.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(),
+    squashedSpaced: squashedBoundaryText.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(),
+  };
+}
+
+function stripAllowlistedSegments(profile, allowlistTerms) {
+  let nextProfile = { ...profile };
+
+  for (const term of allowlistTerms) {
+    const regex = buildObfuscatedRegex(term, { global: true });
+    if (!regex) {
+      continue;
+    }
+
+    nextProfile = rebuildModerationProfile(
+      nextProfile.boundaryText.replace(regex, ' '),
+      nextProfile.squashedBoundaryText.replace(regex, ' ')
+    );
+  }
+
+  return nextProfile;
+}
+
+function matchesAbusePattern(profile, pattern) {
+  const normalizedPattern = normalizeForModeration(pattern.value);
+  const paddedSpacedText = ` ${profile.spaced} `;
+  const paddedSquashedText = ` ${profile.squashedSpaced} `;
+  const spacedPattern = ` ${normalizedPattern.spaced} `;
+  const squashedPattern = ` ${normalizedPattern.squashedSpaced} `;
+
+  if (normalizedPattern.spaced && paddedSpacedText.includes(spacedPattern)) {
+    return true;
+  }
+
+  if (normalizedPattern.squashedSpaced && paddedSquashedText.includes(squashedPattern)) {
+    return true;
+  }
+
+  const regex = buildObfuscatedRegex(pattern.value);
+  return Boolean(
+    regex &&
+      (regex.test(profile.boundaryText) || regex.test(profile.squashedBoundaryText))
+  );
+}
+
+export function classifyAbusiveLanguage(submission, env = process.env) {
   const combinedText = [submission.name, submission.company, submission.message].join('\n');
-  const compactText = normalizeForAbuseChecks(combinedText);
+  const allowlistTerms = getAllowlistTerms(env);
+  const profile = stripAllowlistedSegments(normalizeForModeration(combinedText), allowlistTerms);
+  const dropMatch = DROP_ABUSE_PATTERNS.find((pattern) => matchesAbusePattern(profile, pattern));
+
+  if (dropMatch) {
+    return {
+      verdict: 'drop',
+      reasons: [dropMatch.reason],
+      match: dropMatch.value,
+    };
+  }
+
+  const reviewMatch = REVIEW_ABUSE_PATTERNS.find((pattern) => matchesAbusePattern(profile, pattern));
+  if (reviewMatch) {
+    return {
+      verdict: 'review',
+      reasons: [reviewMatch.reason],
+      match: reviewMatch.value,
+    };
+  }
+
+  return {
+    verdict: 'allow',
+    reasons: [],
+    match: null,
+  };
+}
+
+export function scoreSubmissionForAbuse(submission, env = process.env) {
+  const combinedText = [submission.name, submission.company, submission.message].join('\n');
   const lowerText = normalizeMultiline(combinedText).toLowerCase();
   const repeatedCharacters = /(.)\1{6,}/u.test(lowerText);
   const linkMatches = lowerText.match(/(?:https?:\/\/|www\.)/g) || [];
   const hasMixedScripts = hasMixedScriptSpoofing(combinedText);
-  const hasProfanity = PROFANITY_TERMS.some((term) => compactText.includes(normalizeForAbuseChecks(term)));
   const uppercaseRatio = (() => {
     const lettersOnly = submission.message.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, '');
     if (lettersOnly.length < 12) {
@@ -457,47 +648,57 @@ export function scoreSubmissionForAbuse(submission) {
     const uppercaseLetters = lettersOnly.replace(/[^A-ZÁÉÍÓÚÜÑ]/g, '');
     return uppercaseLetters.length / lettersOnly.length;
   })();
-
+  const languageAbuse = classifyAbusiveLanguage(submission, env);
+  const reasons = new Set(languageAbuse.reasons);
   let score = 0;
-  const reasons = [];
+
+  if (languageAbuse.verdict === 'review') {
+    score += 4;
+  }
+
+  if (languageAbuse.verdict === 'drop') {
+    score += 7;
+  }
 
   if (linkMatches.length >= 1) {
     score += 1;
-    reasons.push('contains_link');
+    reasons.add('contains_link');
   }
 
   if (linkMatches.length >= 2) {
     score += 3;
-    reasons.push('multiple_links');
+    reasons.add('multiple_links');
   }
 
   if (repeatedCharacters) {
     score += 2;
-    reasons.push('repeated_characters');
-  }
-
-  if (hasProfanity) {
-    score += 3;
-    reasons.push('profanity');
+    reasons.add('repeated_characters');
   }
 
   if (hasMixedScripts) {
     score += 2;
-    reasons.push('mixed_scripts');
+    reasons.add('mixed_scripts');
   }
 
   if (uppercaseRatio > 0.65) {
     score += 1;
-    reasons.push('excessive_uppercase');
+    reasons.add('excessive_uppercase');
   }
 
-  const verdict =
-    score >= 7 || (hasProfanity && linkMatches.length >= 1) ? 'drop' : score >= 4 ? 'review' : 'allow';
+  let verdict = languageAbuse.verdict;
+  if (verdict !== 'drop') {
+    if (score >= 7) {
+      verdict = 'drop';
+    } else if (score >= 4) {
+      verdict = 'review';
+    }
+  }
 
   return {
     score,
-    reasons,
+    reasons: [...reasons],
     verdict,
+    match: languageAbuse.match,
   };
 }
 
@@ -513,6 +714,39 @@ export function checkRateLimit(ip, now = Date.now(), rateLimitStore = contactSto
 
   rateLimitStore.set(key, [...timestamps, now]);
   return { ok: true };
+}
+
+async function applyRateLimit(request, { env = process.env, ip, now = Date.now(), stores = contactStores, firewallRateLimiter = checkFirewallRateLimit } = {}) {
+  const rateLimitId = normalizeSingleLine(env.CONTACT_RATE_LIMIT_ID) || DEFAULT_RATE_LIMIT_ID;
+  const shouldUseFirewall =
+    isProductionEnvironment(env) || normalizeSingleLine(env.VERCEL_URL) || normalizeSingleLine(env.VERCEL_ENV) === 'preview';
+
+  if (shouldUseFirewall) {
+    try {
+      const result = await firewallRateLimiter(rateLimitId, {
+        request,
+        rateLimitKey: ip || 'unknown',
+      });
+
+      if (result.rateLimited) {
+        return {
+          ok: false,
+          retryAfterSeconds: 60,
+          source: result.error || 'firewall',
+        };
+      }
+    } catch (error) {
+      console.warn('Firewall rate limit check failed, falling back to local limiter.', {
+        code: 'firewall_rate_limit_failed',
+        message: error instanceof Error ? error.message : 'unknown',
+      });
+    }
+  }
+
+  return {
+    ...checkRateLimit(ip, now, stores.rateLimit),
+    source: 'memory',
+  };
 }
 
 export function checkDuplicateSubmission(
@@ -542,13 +776,13 @@ function hashForLogs(value, env = process.env) {
   return crypto.createHmac('sha256', secret).update(value).digest('hex').slice(0, 12);
 }
 
-function createTransport() {
-  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-  const port = Number(process.env.SMTP_PORT || 465);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+function createTransport(env = process.env) {
+  const host = normalizeSingleLine(env.SMTP_HOST);
+  const port = Number(env.SMTP_PORT || 465);
+  const user = normalizeSingleLine(env.SMTP_USER);
+  const pass = env.SMTP_PASS;
 
-  if (!user || !pass) {
+  if (!host || !user || !pass) {
     throw new Error('SMTP credentials are missing.');
   }
 
@@ -561,6 +795,23 @@ function createTransport() {
       pass,
     },
   });
+}
+
+function getMailboxRoute(verdict, env = process.env) {
+  const primaryTo = normalizeSingleLine(env.CONTACT_TO_EMAIL);
+  const quarantineTo = normalizeSingleLine(env.CONTACT_QUARANTINE_TO_EMAIL);
+
+  if (verdict === 'drop') {
+    return { route: 'drop', to: null };
+  }
+
+  if (verdict === 'review') {
+    return quarantineTo
+      ? { route: 'quarantine', to: quarantineTo }
+      : { route: 'review_without_quarantine', to: null };
+  }
+
+  return primaryTo ? { route: 'main', to: primaryTo } : { route: 'misconfigured', to: null };
 }
 
 export function createEmailContent({ submission, source, submittedAt, spamVerdict, spamReasons, ipHash }) {
@@ -617,10 +868,31 @@ export function createEmailContent({ submission, source, submittedAt, spamVerdic
   };
 }
 
+function getTurnstileConfiguration(env = process.env) {
+  const secret = normalizeSingleLine(env.TURNSTILE_SECRET_KEY);
+  const siteKey = normalizeSingleLine(env.VITE_TURNSTILE_SITE_KEY);
+
+  if (secret && siteKey) {
+    return { enabled: true, misconfigured: false };
+  }
+
+  if (secret || siteKey) {
+    return {
+      enabled: false,
+      misconfigured: isProductionEnvironment(env),
+    };
+  }
+
+  return { enabled: false, misconfigured: false };
+}
+
 async function verifyTurnstileToken(token, ip, env = process.env) {
-  const secret = env.TURNSTILE_SECRET_KEY;
-  const siteKey = env.VITE_TURNSTILE_SITE_KEY;
-  if (!secret || !siteKey) {
+  const turnstileConfig = getTurnstileConfiguration(env);
+  if (turnstileConfig.misconfigured) {
+    return { ok: false, reason: 'turnstile_misconfigured' };
+  }
+
+  if (!turnstileConfig.enabled) {
     return { ok: true, reason: 'turnstile_not_configured' };
   }
 
@@ -634,7 +906,7 @@ async function verifyTurnstileToken(token, ip, env = process.env) {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      secret,
+      secret: env.TURNSTILE_SECRET_KEY,
       response: token,
       remoteip: ip || '',
     }),
@@ -657,165 +929,242 @@ async function verifyTurnstileToken(token, ip, env = process.env) {
   return { ok: true, reason: 'turnstile_verified' };
 }
 
-function isJsonRequest(req) {
-  const contentType = normalizeSingleLine(req.headers['content-type'] || '');
+function isJsonRequest(request) {
+  const contentType = normalizeSingleLine(request.headers.get('content-type'));
   return contentType.toLowerCase().startsWith('application/json');
 }
 
-function getPublicMailTarget(verdict) {
-  if (verdict === 'review') {
-    return (
-      process.env.CONTACT_QUARANTINE_TO_EMAIL ||
-      process.env.CONTACT_TO_EMAIL ||
-      DEFAULT_TO_EMAIL
+function createSubmissionRequest(url, { method, body, headers = {} } = {}) {
+  return new Request(url, {
+    method,
+    headers,
+    body,
+  });
+}
+
+async function sendSubmissionEmail(message, env = process.env, transportFactory = createTransport) {
+  const transport = transportFactory(env);
+  await transport.sendMail(message);
+}
+
+function buildMailMessage({ submission, source, spamVerdict, spamReasons, ipHash, env = process.env, submittedAt = new Date().toISOString() }) {
+  const mailboxRoute = getMailboxRoute(spamVerdict, env);
+  const from = normalizeSingleLine(env.CONTACT_FROM_EMAIL || env.SMTP_USER);
+
+  if (!mailboxRoute.to || !from) {
+    return {
+      ok: false,
+      route: mailboxRoute.route,
+      reason: 'mailbox_not_configured',
+    };
+  }
+
+  const { subject, text, html } = createEmailContent({
+    submission,
+    source,
+    submittedAt,
+    spamVerdict,
+    spamReasons,
+    ipHash,
+  });
+
+  return {
+    ok: true,
+    route: mailboxRoute.route,
+    message: {
+      from,
+      to: mailboxRoute.to,
+      replyTo: submission.email,
+      subject,
+      text,
+      html,
+    },
+  };
+}
+
+export async function handleContactGet(request, { env = process.env, now = Date.now() } = {}) {
+  const turnstileConfig = getTurnstileConfiguration(env);
+
+  if (turnstileConfig.misconfigured) {
+    return jsonResponse(503, { error: PUBLIC_RETRY_MESSAGE });
+  }
+
+  try {
+    const { token } = createFormSession(now, env);
+    return jsonResponse(
+      200,
+      {
+        formToken: token,
+        minSubmitDelayMs: MIN_SUBMIT_DELAY_MS,
+        challengeRequired: turnstileConfig.enabled,
+      },
+      {
+        cookies: [buildFormCookie(token, env)],
+      }
+    );
+  } catch (error) {
+    console.error('Contact form session bootstrap failed.', {
+      code: 'contact_form_secret_missing',
+      message: error instanceof Error ? error.message : 'unknown',
+    });
+    return jsonResponse(503, { error: PUBLIC_RETRY_MESSAGE });
+  }
+}
+
+export async function handleContactPost(
+  request,
+  {
+    env = process.env,
+    now = Date.now(),
+    stores = contactStores,
+    firewallRateLimiter = checkFirewallRateLimit,
+    turnstileVerifier = verifyTurnstileToken,
+    mailSender = sendSubmissionEmail,
+  } = {}
+) {
+  const expiredCookie = buildExpiredFormCookie(env);
+  const turnstileConfig = getTurnstileConfiguration(env);
+  if (turnstileConfig.misconfigured) {
+    return jsonResponse(503, { error: PUBLIC_RETRY_MESSAGE }, { cookies: [expiredCookie] });
+  }
+
+  if (!isJsonRequest(request)) {
+    return jsonResponse(415, { error: PUBLIC_INVALID_MESSAGE }, { cookies: [expiredCookie] });
+  }
+
+  const requestOrigin = normalizeSingleLine(request.headers.get('origin'));
+  if (!isAllowedOrigin(requestOrigin, env)) {
+    return jsonResponse(403, { error: PUBLIC_RETRY_MESSAGE }, { cookies: [expiredCookie] });
+  }
+
+  const parsedBody = await parseJsonBody(request);
+  if (!parsedBody.ok) {
+    return jsonResponse(
+      parsedBody.reason === 'body_too_large' ? 413 : 400,
+      { error: PUBLIC_INVALID_MESSAGE },
+      { cookies: [expiredCookie] }
     );
   }
 
-  return process.env.CONTACT_TO_EMAIL || DEFAULT_TO_EMAIL;
-}
-
-function shouldRequireTurnstile(env = process.env) {
-  return Boolean(env.TURNSTILE_SECRET_KEY && env.VITE_TURNSTILE_SITE_KEY);
-}
-
-export default async function handler(req, res) {
-  if (req.method === 'GET') {
-    try {
-      const { token } = createFormSession(Date.now(), process.env);
-      res.setHeader('Set-Cookie', buildFormCookie(token, process.env));
-      return json(res, 200, {
-        formToken: token,
-        minSubmitDelayMs: MIN_SUBMIT_DELAY_MS,
-        challengeRequired: shouldRequireTurnstile(process.env),
-      });
-    } catch (error) {
-      console.error('Contact form session bootstrap failed.', {
-        code: 'contact_form_secret_missing',
-        message: error instanceof Error ? error.message : 'unknown',
-      });
-      return json(res, 503, { error: PUBLIC_RETRY_MESSAGE });
-    }
-  }
-
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'GET, POST');
-    return json(res, 405, { error: PUBLIC_INVALID_MESSAGE });
-  }
-
-  res.setHeader('Set-Cookie', buildExpiredFormCookie(process.env));
-
-  if (!isJsonRequest(req)) {
-    return json(res, 415, { error: PUBLIC_INVALID_MESSAGE });
-  }
-
-  const requestBodySize = getRequestBodySize(req, req.body);
-  if (!Number.isFinite(requestBodySize) || requestBodySize > MAX_BODY_BYTES) {
-    return json(res, 413, { error: PUBLIC_INVALID_MESSAGE });
-  }
-
-  const requestOrigin = normalizeSingleLine(req.headers.origin);
-  if (!isAllowedOrigin(requestOrigin, process.env)) {
-    return json(res, 403, { error: PUBLIC_RETRY_MESSAGE });
-  }
-
-  const parsedBody = parseJsonBody(req);
-  const validation = validateSubmission(parsedBody);
+  const validation = validateSubmission(parsedBody.body);
   if (!validation.ok) {
-    return json(res, 400, { error: PUBLIC_INVALID_MESSAGE });
+    return jsonResponse(400, { error: PUBLIC_INVALID_MESSAGE }, { cookies: [expiredCookie] });
   }
 
-  const cookies = parseCookies(req.headers.cookie);
+  const cookies = parseCookies(request.headers.get('cookie'));
   const sessionVerification = verifyFormSession(
     {
       bodyToken: validation.data.formToken,
       cookieToken: cookies[FORM_COOKIE_NAME],
-      now: Date.now(),
-      env: process.env,
+      now,
+      env,
     },
-    contactStores.usedTokens
+    stores.usedTokens
   );
   if (!sessionVerification.ok) {
     if (sessionVerification.reason === 'token_replayed') {
-      return json(res, 202, { ok: true });
+      return jsonResponse(202, { ok: true }, { cookies: [expiredCookie] });
     }
-    return json(res, 400, { error: PUBLIC_INVALID_MESSAGE });
+    return jsonResponse(400, { error: PUBLIC_INVALID_MESSAGE }, { cookies: [expiredCookie] });
   }
 
-  const clientIp = getClientIp(req);
-  const rateLimit = checkRateLimit(clientIp, Date.now(), contactStores.rateLimit);
+  const clientIp = getClientIp(request);
+  const rateLimit = await applyRateLimit(request, {
+    env,
+    ip: clientIp,
+    now,
+    stores,
+    firewallRateLimiter,
+  });
   if (!rateLimit.ok) {
-    return json(
-      res,
+    return jsonResponse(
       429,
       { error: PUBLIC_RETRY_MESSAGE },
-      { 'Retry-After': String(rateLimit.retryAfterSeconds) }
+      {
+        cookies: [expiredCookie],
+        headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) },
+      }
     );
   }
 
-  const turnstileVerification = await verifyTurnstileToken(
+  const turnstileVerification = await turnstileVerifier(
     validation.data.turnstileToken,
     clientIp,
-    process.env
+    env
   );
   if (!turnstileVerification.ok) {
-    return json(res, 403, { error: PUBLIC_RETRY_MESSAGE });
+    return jsonResponse(403, { error: PUBLIC_RETRY_MESSAGE }, { cookies: [expiredCookie] });
   }
 
-  const duplicateCheck = checkDuplicateSubmission(
-    validation.data,
-    clientIp,
-    Date.now(),
-    contactStores.duplicates
-  );
+  const duplicateCheck = checkDuplicateSubmission(validation.data, clientIp, now, stores.duplicates);
   if (!duplicateCheck.ok) {
-    rememberUsedToken(sessionVerification.payload.nonce);
-    return json(res, 202, { ok: true });
+    rememberUsedToken(sessionVerification.payload.nonce, now, stores.usedTokens);
+    return jsonResponse(202, { ok: true }, { cookies: [expiredCookie] });
   }
 
-  const abuseScore = scoreSubmissionForAbuse(validation.data);
-  const ipHash = hashForLogs(clientIp, process.env);
-  const trustedSource = getTrustedSource(req, process.env);
+  const abuseScore = scoreSubmissionForAbuse(validation.data, env);
+  const ipHash = hashForLogs(clientIp, env);
+  const trustedSource = getTrustedSource(request, env);
 
   if (abuseScore.verdict === 'drop') {
-    rememberUsedToken(sessionVerification.payload.nonce);
+    rememberUsedToken(sessionVerification.payload.nonce, now, stores.usedTokens);
     console.warn('Contact submission dropped by abuse controls.', {
       code: 'submission_dropped',
       reasons: abuseScore.reasons,
       ipHash,
     });
-    return json(res, 202, { ok: true });
+    return jsonResponse(202, { ok: true }, { cookies: [expiredCookie] });
+  }
+
+  const mailBuild = buildMailMessage({
+    submission: validation.data,
+    source: trustedSource,
+    spamVerdict: abuseScore.verdict,
+    spamReasons: abuseScore.reasons,
+    ipHash,
+    env,
+  });
+
+  if (!mailBuild.ok && abuseScore.verdict === 'review') {
+    rememberUsedToken(sessionVerification.payload.nonce, now, stores.usedTokens);
+    console.warn('Contact submission quarantined without mailbox target.', {
+      code: 'review_without_quarantine',
+      reasons: abuseScore.reasons,
+      ipHash,
+    });
+    return jsonResponse(202, { ok: true }, { cookies: [expiredCookie] });
+  }
+
+  if (!mailBuild.ok) {
+    stores.duplicates.delete(duplicateCheck.fingerprint);
+    console.error('Contact form delivery failed.', {
+      code: 'mailbox_not_configured',
+      ipHash,
+    });
+    return jsonResponse(503, { error: PUBLIC_RETRY_MESSAGE }, { cookies: [expiredCookie] });
   }
 
   try {
-    const transport = createTransport();
-    const submittedAt = new Date().toISOString();
-    const { subject, text, html } = createEmailContent({
-      submission: validation.data,
-      source: trustedSource,
-      submittedAt,
-      spamVerdict: abuseScore.verdict,
-      spamReasons: abuseScore.reasons,
-      ipHash,
-    });
-
-    await transport.sendMail({
-      from: process.env.CONTACT_FROM_EMAIL || process.env.SMTP_USER,
-      to: getPublicMailTarget(abuseScore.verdict),
-      replyTo: validation.data.email,
-      subject,
-      text,
-      html,
-    });
-
-    rememberUsedToken(sessionVerification.payload.nonce);
-    return json(res, 200, { ok: true });
+    await mailSender(mailBuild.message, env);
+    rememberUsedToken(sessionVerification.payload.nonce, now, stores.usedTokens);
+    return jsonResponse(200, { ok: true }, { cookies: [expiredCookie] });
   } catch (error) {
-    contactStores.duplicates.delete(duplicateCheck.fingerprint);
+    stores.duplicates.delete(duplicateCheck.fingerprint);
     console.error('Contact form delivery failed.', {
       code: 'mail_delivery_failed',
       message: error instanceof Error ? error.message : 'unknown',
       ipHash,
     });
-    return json(res, 503, { error: PUBLIC_RETRY_MESSAGE });
+    return jsonResponse(503, { error: PUBLIC_RETRY_MESSAGE }, { cookies: [expiredCookie] });
   }
 }
+
+export async function GET(request) {
+  return handleContactGet(request);
+}
+
+export async function POST(request) {
+  return handleContactPost(request);
+}
+
+export { createSubmissionRequest };

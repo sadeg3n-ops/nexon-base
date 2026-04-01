@@ -4,8 +4,11 @@ import assert from 'node:assert/strict';
 import {
   checkDuplicateSubmission,
   checkRateLimit,
+  classifyAbusiveLanguage,
+  createContactStores,
   createEmailContent,
   createFormSession,
+  handleContactPost,
   isAllowedOrigin,
   scoreSubmissionForAbuse,
   validateSubmission,
@@ -22,6 +25,38 @@ const baseSubmission = {
   formToken: 'placeholder-token',
   turnstileToken: 'challenge-token',
 };
+
+function createTestEnv(overrides = {}) {
+  return {
+    NODE_ENV: 'test',
+    CONTACT_FORM_SECRET: 'test-secret',
+    CONTACT_TO_EMAIL: 'inbox@example.com',
+    CONTACT_QUARANTINE_TO_EMAIL: 'review@example.com',
+    CONTACT_FROM_EMAIL: 'mailer@example.com',
+    SMTP_USER: 'mailer@example.com',
+    ...overrides,
+  };
+}
+
+function createSignedPostRequest(payload, env, now, origin = 'https://nexobase.dev') {
+  const { token } = createFormSession(now - 5000, env);
+
+  return new Request('https://nexobase.dev/api/contact', {
+    method: 'POST',
+    headers: {
+      Origin: origin,
+      'Content-Type': 'application/json',
+      Cookie: `nexo_contact_session=${token}`,
+      'X-Forwarded-For': '203.0.113.9',
+      'X-Real-Ip': '203.0.113.9',
+    },
+    body: JSON.stringify({
+      ...baseSubmission,
+      ...payload,
+      formToken: token,
+    }),
+  });
+}
 
 test('validateSubmission normalizes text and rejects unexpected fields', () => {
   const valid = validateSubmission({
@@ -64,22 +99,77 @@ test('createEmailContent escapes user-controlled HTML and keeps a fixed subject'
   assert.doesNotMatch(email.html, /<script>alert\(1\)<\/script>/);
 });
 
-test('scoreSubmissionForAbuse flags obvious spam and unicode spoofing', () => {
-  const spam = scoreSubmissionForAbuse({
-    name: 'рromo team',
-    email: 'antonio@example.com',
-    company: 'Acme',
-    message: 'FREE TRAFFIC NOW!!!!! visit https://spam.example and https://spam-two.example puta',
-  });
+test('classifyAbusiveLanguage drops spaced and punctuated insults', () => {
+  const abuse = classifyAbusiveLanguage(
+    {
+      ...baseSubmission,
+      message: 'Eres un h.i.j.o    d e   p.u.t.a y no vuelvo.',
+    },
+    createTestEnv()
+  );
 
-  assert.equal(spam.verdict, 'drop');
-  assert.ok(spam.reasons.includes('multiple_links'));
-  assert.ok(spam.reasons.includes('profanity'));
-  assert.ok(spam.reasons.includes('mixed_scripts'));
+  assert.equal(abuse.verdict, 'drop');
+  assert.equal(abuse.match, 'hijo de puta');
+});
+
+test('classifyAbusiveLanguage reviews leetspeak accusations', () => {
+  const abuse = classifyAbusiveLanguage(
+    {
+      ...baseSubmission,
+      message: 'Tu servicio es una e$taf4 y eres un t1mador.',
+    },
+    createTestEnv()
+  );
+
+  assert.equal(abuse.verdict, 'review');
+  assert.ok(['estafa', 'timador'].includes(abuse.match));
+});
+
+test('classifyAbusiveLanguage respects allowlisted phrases to avoid false positives', () => {
+  const abuse = classifyAbusiveLanguage(
+    {
+      ...baseSubmission,
+      message: 'Necesito una landing anti-estafa para proteger a mis clientes.',
+    },
+    createTestEnv({
+      PROFANITY_ALLOWLIST_TERMS: 'anti estafa',
+    })
+  );
+
+  assert.equal(abuse.verdict, 'allow');
+});
+
+test('scoreSubmissionForAbuse routes allow, review, and drop correctly', () => {
+  assert.equal(
+    scoreSubmissionForAbuse(baseSubmission, createTestEnv()).verdict,
+    'allow'
+  );
+
+  assert.equal(
+    scoreSubmissionForAbuse(
+      {
+        ...baseSubmission,
+        message: 'Si no respondes, os voy a denunciar y hablaré con mi abogado.',
+      },
+      createTestEnv()
+    ).verdict,
+    'review'
+  );
+
+  assert.equal(
+    scoreSubmissionForAbuse(
+      {
+        ...baseSubmission,
+        message: 'FREE TRAFFIC NOW!!!!! visit https://spam.example and https://spam-two.example hijo de puta',
+      },
+      createTestEnv()
+    ).verdict,
+    'drop'
+  );
 });
 
 test('form sessions require matching cookie/body tokens and a minimum dwell time', () => {
-  const env = { NODE_ENV: 'test', CONTACT_FORM_SECRET: 'test-secret' };
+  const env = createTestEnv();
   const now = Date.UTC(2026, 3, 1, 11, 0, 0);
   const { token } = createFormSession(now, env);
   const usedTokens = new Map();
@@ -149,4 +239,88 @@ test('origin allowlist accepts expected hosts and rejects hostile origins', () =
   assert.equal(isAllowedOrigin('https://nexobase.dev', env), true);
   assert.equal(isAllowedOrigin('https://preview.nexobase.dev', env), true);
   assert.equal(isAllowedOrigin('https://evil.example', env), false);
+});
+
+test('handleContactPost silently absorbs dropped abuse without sending email', async () => {
+  const env = createTestEnv();
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  const request = createSignedPostRequest(
+    {
+      message: 'Eres un h.i.j.o d.e p.u.t.a',
+    },
+    env,
+    now
+  );
+  const deliveries = [];
+
+  const response = await handleContactPost(request, {
+    env,
+    now,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: false }),
+    turnstileVerifier: async () => ({ ok: true }),
+    mailSender: async (message) => {
+      deliveries.push(message);
+    },
+  });
+
+  assert.equal(response.status, 202);
+  assert.deepEqual(await response.json(), { ok: true });
+  assert.equal(deliveries.length, 0);
+});
+
+test('handleContactPost routes review traffic to quarantine instead of the main inbox', async () => {
+  const env = createTestEnv();
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  const request = createSignedPostRequest(
+    {
+      message: 'Tu servicio es una estafa y os voy a denunciar.',
+    },
+    env,
+    now
+  );
+  const deliveries = [];
+
+  const response = await handleContactPost(request, {
+    env,
+    now,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: false }),
+    turnstileVerifier: async () => ({ ok: true }),
+    mailSender: async (message) => {
+      deliveries.push(message);
+    },
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(deliveries.length, 1);
+  assert.equal(deliveries[0].to, 'review@example.com');
+  assert.equal(deliveries[0].subject, 'Revisión manual: solicitud de diagnóstico');
+});
+
+test('handleContactPost returns 429 when the firewall rate limiter blocks the request', async () => {
+  const env = createTestEnv({ NODE_ENV: 'production' });
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  const request = createSignedPostRequest({}, env, now);
+  let sendAttempted = false;
+
+  const response = await handleContactPost(request, {
+    env,
+    now,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: true }),
+    turnstileVerifier: async () => ({ ok: true }),
+    mailSender: async () => {
+      sendAttempted = true;
+    },
+  });
+
+  assert.equal(response.status, 429);
+  assert.equal(sendAttempted, false);
+  assert.deepEqual(await response.json(), {
+    error: 'No se pudo enviar la solicitud ahora mismo. Inténtalo de nuevo en unos minutos.',
+  });
 });
