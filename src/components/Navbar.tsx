@@ -13,18 +13,18 @@ export function Navbar() {
           <img 
             src={logo} 
             alt="Nexo Base" 
-            className="h-8 sm:h-10 md:h-[42px] lg:h-[48px] w-auto object-contain transition-transform hover:scale-105" 
+            className="h-10 sm:h-12 md:h-[50px] lg:h-[60px] w-auto object-contain transition-transform hover:scale-105" 
           />
         </div>
         
         <nav className="hidden md:flex items-center gap-8 text-[13px] font-medium text-gray-400/90 tracking-wide">
           <button onClick={() => scrollTo('sistema')} className="hover:text-white transition-colors">Sistema</button>
           <button onClick={() => scrollTo('metodo')} className="hover:text-white transition-colors">Cómo funciona</button>
-          <button onClick={() => scrollTo('precios')} className="hover:text-white transition-colors">Precios</button>
+          <button onClick={() => scrollTo('sistemas')} className="hover:text-white transition-colors">Servicios</button>
           <button onClick={() => scrollTo('faq')} className="hover:text-white transition-colors">FAQ</button>
         </nav>
 
-        <Button onClick={() => scrollTo('diagnostico')} className="text-xs sm:text-sm px-3 py-2 sm:px-4 md:px-6 md:py-2.5 bg-white text-black hover:bg-gray-100/90 font-medium whitespace-nowrap rounded-lg md:rounded-md shadow-sm">
+        <Button onClick={() => scrollTo('diagnostico')} className="text-xs sm:text-sm px-4 py-2 sm:px-5 md:px-6 md:py-2.5 bg-[#0a0a0b]/80 text-white backdrop-blur-md border border-white/10 hover:border-ai-purple/50 shadow-[0_0_15px_-5px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_-5px_rgba(124,58,237,0.3)] font-medium whitespace-nowrap rounded-lg md:rounded-md">
           <span className="md:hidden">Diagnóstico</span>
           <span className="hidden md:inline">Solicitar diagnóstico gratuito</span>
         </Button>

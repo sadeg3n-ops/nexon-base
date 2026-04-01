@@ -8,7 +8,7 @@ export function FinalCTA() {
   };
 
   return (
-    <section className="py-24 px-6 md:px-12 lg:px-24 mb-16 relative">
+    <section className="py-16 md:py-24 px-6 md:px-12 lg:px-24 mb-16 relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-64 bg-ai-purple/10 rounded-full blur-[120px] z-[0]"></div>
 
       <motion.div 
@@ -46,10 +46,10 @@ export function FinalCTA() {
         >
           <Button 
             onClick={scrollToAudit} 
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black hover:bg-gray-100 text-lg font-semibold transition-all hover:scale-105 shadow-[0_0_40px_-10px_rgba(255,255,255,0.2)] active:scale-95 group"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-[#0a0a0b]/80 text-white backdrop-blur-xl border border-white/10 hover:border-ai-purple/50 shadow-[0_0_20px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_-5px_rgba(124,58,237,0.4)] text-lg font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-95 group"
           >
             Solicitar diagnóstico gratuito
-            <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+            <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 text-ai-purple shrink-0" />
           </Button>
           <p className="mt-6 text-sm text-gray-500 font-medium">
             Respuesta en 24h. Sin presión.

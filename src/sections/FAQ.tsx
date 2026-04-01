@@ -47,7 +47,7 @@ export function FAQ() {
   };
 
   return (
-    <section id="faq" className="py-24 px-6 md:px-12 lg:px-24">
+    <section id="faq" className="py-16 md:py-24 px-6 md:px-12 lg:px-24 border-t border-white/5 md:border-t-0">
       <div className="max-w-4xl mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}

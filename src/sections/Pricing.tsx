@@ -6,7 +6,7 @@ export function Pricing() {
   const packs = [
     {
       name: 'Web de captación',
-      price: '1.099 €',
+      price: 'Consultar',
       text: 'La base para captar mejor y responder mejor.',
       includes: [
         'Página enfocada a captación',
@@ -19,7 +19,7 @@ export function Pricing() {
     },
     {
       name: 'Sistema de captación',
-      price: '2.597 €',
+      price: 'A medida',
       text: 'Para negocios que necesitan más orden, seguimiento y reservas.',
       includes: [
         'Web de captación',
@@ -31,7 +31,7 @@ export function Pricing() {
     },
     {
       name: 'Sistema completo',
-      price: '4.495 €',
+      price: 'A medida',
       text: 'La opción más completa para captar, ordenar y automatizar.',
       includes: [
         'Web de captación',
@@ -66,7 +66,7 @@ export function Pricing() {
   };
 
   return (
-    <section id="precios" className="py-24 px-6 md:px-12 lg:px-24">
+    <section id="sistemas" className="py-16 md:py-24 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
         
         <motion.div 
@@ -77,10 +77,10 @@ export function Pricing() {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-            Empieza por la base y amplía cuando tenga sentido
+            Nuestros Servicios
           </h2>
           <p className="text-lg text-gray-400">
-            Tres formas de empezar, según tu punto de partida.
+            Diferentes puntos de partida, diseñados para solucionar problemas específicos.
           </p>
         </motion.div>
 
@@ -106,8 +106,7 @@ export function Pricing() {
               {pack.highlight && (
                 <div className="absolute top-0 right-0 w-32 h-32 bg-ai-blue/10 rounded-full filter blur-[40px]"></div>
               )}
-              <h3 className="text-lg font-semibold text-white mb-2 relative z-10">{pack.name}</h3>
-              <div className="text-4xl font-bold text-white mb-4 relative z-10">{pack.price}</div>
+              <h3 className="text-xl font-bold text-white mb-4 relative z-10">{pack.name}</h3>
               <p className="text-gray-400 mb-8 relative z-10">{pack.text}</p>
               
               <ul className="space-y-4 mb-8 relative z-10 flex-grow">
@@ -121,13 +120,13 @@ export function Pricing() {
               
               <Button 
                 onClick={scrollToAudit}
-                className={`w-full py-3 relative z-10 transition-transform active:scale-95 ${
+                className={`w-full py-3 relative z-10 transition-transform active:scale-95 duration-300 font-medium ${
                   pack.highlight
-                    ? 'bg-white text-black hover:bg-gray-100 hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.4)]'
+                    ? 'bg-[#0a0a0b]/80 border border-white/10 text-white hover:border-ai-purple/50 shadow-[0_0_20px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_-5px_rgba(124,58,237,0.4)]'
                     : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
                 }`}
               >
-                {pack.cta}
+                Consultar disponibilidad
               </Button>
             </motion.div>
           ))}
@@ -156,27 +155,26 @@ export function Pricing() {
             <h3 className="text-xl font-semibold text-white mb-6">Módulos opcionales</h3>
             <ul className="space-y-4">
               {[
-                { n: "Seguimiento de oportunidades", p: "1.099 €" },
-                { n: "Reservas online", p: "599 €" },
-                { n: "Emails automáticos", p: "599 €" },
-                { n: "Pagos online", p: "699 €" }
+                "Seguimiento de oportunidades",
+                "Reservas online",
+                "Emails automáticos",
+                "Pagos online"
               ].map((mod, i) => (
                 <li key={i} className="flex justify-between border-b border-white/5 pb-2 transition-colors hover:border-white/20">
-                  <span className="text-gray-300">{mod.n}</span>
-                  <span className="text-gray-400 font-medium">{mod.p}</span>
+                  <span className="text-gray-300">{mod}</span>
+                  <span className="text-gray-500 font-medium text-sm">Consultar</span>
                 </li>
               ))}
               <li className="flex justify-between transition-colors hover:text-white">
                 <span className="text-gray-300">SEO / GEO / AEO</span>
-                <span className="text-gray-400 font-medium">900 €</span>
+                <span className="text-gray-500 font-medium text-sm">Consultar</span>
               </li>
             </ul>
           </div>
 
           {/* Column 2: Maintenance */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-2">Mantenimiento y soporte</h3>
-            <div className="text-2xl font-bold text-white mb-4">350 € <span className="text-sm font-normal text-gray-500">/ mes</span></div>
+            <h3 className="text-xl font-semibold text-white mb-4">Mantenimiento y soporte</h3>
             <p className="text-gray-400 text-sm mb-6">
               Para que el sistema siga funcionando sin que tengas que ocuparte de la parte técnica.
             </p>

@@ -36,7 +36,7 @@ export function HowItWorks() {
   ];
 
   return (
-    <section id="metodo" className="py-24 px-6 md:px-12 lg:px-24">
+    <section id="metodo" className="py-16 md:py-24 px-6 md:px-12 lg:px-24 border-t border-white/5 md:border-t-0">
       <div className="max-w-4xl mx-auto">
         
         <motion.div 

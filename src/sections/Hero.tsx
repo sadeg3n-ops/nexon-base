@@ -54,9 +54,9 @@ export function Hero() {
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-            <Button onClick={scrollToAudit} className="px-5 py-3 sm:px-8 sm:py-4 bg-white text-black hover:bg-gray-100 text-sm sm:text-base font-semibold shadow-[0_0_28px_-12px_rgba(255,255,255,0.32)] sm:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] flex items-center gap-2 hover:shadow-[0_0_60px_-10px_rgba(255,255,255,0.5)] transition-all duration-300 transform hover:scale-[1.02] active:scale-95 w-auto max-w-full justify-center rounded-xl sm:rounded-md">
+            <Button onClick={scrollToAudit} className="px-5 py-3 sm:px-8 sm:py-4 bg-[#0a0a0b]/80 text-white backdrop-blur-xl border border-white/10 hover:border-ai-purple/50 shadow-[0_0_20px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_-5px_rgba(124,58,237,0.4)] flex items-center gap-2 transition-all duration-300 transform hover:scale-[1.02] active:scale-95 w-auto max-w-full justify-center rounded-xl sm:rounded-md group">
               Solicitar diagnóstico gratuito
-              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1 shrink-0" />
+              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1 shrink-0 text-ai-purple" />
             </Button>
             <div className="flex flex-col gap-1.5 mt-2 sm:mt-0 items-start">
               <span className="text-sm font-medium text-gray-300 flex items-center gap-2"><CheckCircle2 size={16} className="text-ai-purple shrink-0" /> Respuesta en 24h</span>

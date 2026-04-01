@@ -32,7 +32,7 @@ export function WhoItsFor() {
   };
 
   return (
-    <section id="sistema" className="pt-12 pb-24 md:py-24 px-6 md:px-12 lg:px-24">
+    <section id="sistema" className="py-16 md:py-24 px-6 md:px-12 lg:px-24 border-t border-white/5 md:border-t-0">
       <div className="max-w-6xl mx-auto">
         
         <motion.div 
