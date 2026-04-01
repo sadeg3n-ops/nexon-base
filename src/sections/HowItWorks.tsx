@@ -1,6 +1,17 @@
-import { motion } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { useRef } from 'react';
 
 export function HowItWorks() {
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ['start 80%', 'end 30%']
+  });
+  const mobileLineProgress = useSpring(useTransform(scrollYProgress, [0, 1], [0, 1]), {
+    stiffness: 120,
+    damping: 22
+  });
+
   const steps = [
     {
       num: '01',
@@ -47,7 +58,16 @@ export function HowItWorks() {
           ></motion.div>
         </motion.div>
 
-        <div className="relative pl-8 md:pl-0">
+        <div ref={timelineRef} className="relative pl-8 md:pl-0">
+          {/* Mobile timeline base + neon progress */}
+          <div className="absolute top-0 bottom-0 left-[14px] w-[2px] md:hidden">
+            <div className="absolute inset-0 bg-white/10"></div>
+            <motion.div
+              style={{ scaleY: mobileLineProgress, transformOrigin: 'top' }}
+              className="absolute inset-0 bg-gradient-to-b from-ai-blue via-ai-purple to-ai-blue shadow-[0_0_14px_rgba(124,58,237,0.8)]"
+            ></motion.div>
+          </div>
+
           {/* Vertical Line Desktop */}
           <motion.div 
             initial={{ height: 0 }}
@@ -77,6 +97,13 @@ export function HowItWorks() {
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.4, delay: 0.2 }}
                   className="hidden md:flex absolute left-1/2 -ml-3 w-6 h-6 rounded-full border-4 border-[#0a0a0b] bg-ai-blue shadow-[0_0_15px_rgba(37,99,235,0.5)] z-20 cursor-default"
+                ></motion.div>
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.35, delay: 0.15 }}
+                  className="md:hidden absolute left-0 top-5 -ml-[7px] w-[14px] h-[14px] rounded-full border-2 border-[#0a0a0b] bg-ai-blue shadow-[0_0_14px_rgba(37,99,235,0.7)] z-20"
                 ></motion.div>
 
                 {/* Content Block */}

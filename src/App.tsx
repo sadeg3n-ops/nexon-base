@@ -15,7 +15,7 @@ function App() {
       <Background />
       <Navbar />
       
-      <div className="relative z-10 w-full flex flex-col pt-20">
+      <div className="relative z-10 w-full flex flex-col pt-16 md:pt-20">
         <Hero />
         <WhoItsFor />
         <SystemLayers />

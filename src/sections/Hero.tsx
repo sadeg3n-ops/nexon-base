@@ -29,12 +29,12 @@ export function Hero() {
   };
 
   return (
-    <section className="min-h-min lg:min-h-[calc(100dvh-5rem)] pt-24 pb-16 lg:py-16 flex flex-col justify-center px-6 md:px-12 lg:px-24">
+    <section className="min-h-min lg:min-h-[calc(100dvh-5rem)] pt-8 md:pt-16 lg:pt-24 pb-16 flex flex-col justify-center px-6 md:px-12 lg:px-24">
       <div className="w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         
         {/* Left Column: Copy */}
         <motion.div 
-          className="flex flex-col gap-8"
+          className="flex flex-col gap-8 items-start text-left"
           variants={containerVariants}
           initial="hidden"
           animate="show"
@@ -44,7 +44,7 @@ export function Hero() {
             Web y sistema de captación para negocios
           </motion.div>
           
-          <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-6xl lg:text-[4rem] font-bold text-white leading-[1.1] tracking-tight">
+          <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-6xl lg:text-[4rem] font-bold text-white leading-[1.1] tracking-tight max-w-[14ch] lg:max-w-none">
             Tu web debería captar.<br/>
             <span className="text-gray-400">Tu sistema debería evitar que se pierdan oportunidades.</span>
           </motion.h1>
@@ -53,14 +53,14 @@ export function Hero() {
             Empieza con una base clara para captar mejor hoy y ampliar después sin rehacerlo todo.
           </motion.p>
 
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <Button onClick={scrollToAudit} className="px-8 py-4 bg-white text-black hover:bg-gray-100 text-base font-semibold shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] flex items-center gap-2 hover:shadow-[0_0_60px_-10px_rgba(255,255,255,0.5)] transition-all duration-300 transform hover:scale-[1.02] active:scale-95 w-full sm:w-auto justify-center">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+            <Button onClick={scrollToAudit} className="px-5 py-3 sm:px-8 sm:py-4 bg-white text-black hover:bg-gray-100 text-sm sm:text-base font-semibold shadow-[0_0_28px_-12px_rgba(255,255,255,0.32)] sm:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] flex items-center gap-2 hover:shadow-[0_0_60px_-10px_rgba(255,255,255,0.5)] transition-all duration-300 transform hover:scale-[1.02] active:scale-95 w-auto max-w-full justify-center rounded-xl sm:rounded-md">
               Solicitar diagnóstico gratuito
-              <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1 shrink-0" />
             </Button>
-            <div className="flex flex-col gap-1 mt-2 sm:mt-0">
-              <span className="text-sm font-medium text-gray-300 flex items-center gap-1.5"><CheckCircle2 size={16} className="text-ai-purple" /> Respuesta en 24h</span>
-              <span className="text-sm font-medium text-gray-400 flex items-center gap-1.5"><CheckCircle2 size={16} className="text-ai-blue" /> Te diré por dónde empezaría</span>
+            <div className="flex flex-col gap-1.5 mt-2 sm:mt-0 items-start">
+              <span className="text-sm font-medium text-gray-300 flex items-center gap-2"><CheckCircle2 size={16} className="text-ai-purple shrink-0" /> Respuesta en 24h</span>
+              <span className="text-sm font-medium text-gray-400 flex items-center gap-2"><CheckCircle2 size={16} className="text-ai-blue shrink-0" /> Te diré por dónde empezaría</span>
             </div>
           </motion.div>
         </motion.div>
