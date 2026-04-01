@@ -5,10 +5,9 @@ import { WhoItsFor } from './sections/WhoItsFor';
 import { SystemLayers } from './sections/SystemLayers';
 import { HowItWorks } from './sections/HowItWorks';
 import { Pricing } from './sections/Pricing';
-import { DiagnosticOffer } from './sections/DiagnosticOffer';
 import { FAQ } from './sections/FAQ';
-import { FinalCTA } from './sections/FinalCTA';
-
+import { DiagnosticOffer } from './sections/DiagnosticOffer';
+import { NeonConnector } from './components/NeonConnector';
 function App() {
   return (
     <div className="relative min-h-screen w-full flex flex-col text-gray-100 font-sans selection:bg-ai-purple/30 bg-black">
@@ -17,13 +16,18 @@ function App() {
       
       <div className="relative z-10 w-full flex flex-col pt-16 md:pt-20">
         <Hero />
+        <NeonConnector direction="ltr" />
         <WhoItsFor />
+        <NeonConnector direction="rtl" />
         <SystemLayers />
+        <NeonConnector direction="ltr" />
         <HowItWorks />
+        <NeonConnector direction="rtl" />
         <Pricing />
-        <DiagnosticOffer />
+        <NeonConnector direction="ltr" />
         <FAQ />
-        <FinalCTA />
+        <NeonConnector direction="rtl" />
+        <DiagnosticOffer />
         
         <footer className="w-full border-t border-white/10 py-8 px-6 mt-12 bg-[#0a0a0b]/80 backdrop-blur-xl shrink-0">
           <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-medium">
