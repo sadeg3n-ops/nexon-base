@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
 
 import {
   checkDuplicateSubmission,
@@ -125,6 +126,19 @@ test('classifyAbusiveLanguage reviews leetspeak accusations', () => {
   assert.ok(['estafa', 'timador'].includes(abuse.match));
 });
 
+test('classifyAbusiveLanguage drops unicode-confusable threats', () => {
+  const abuse = classifyAbusiveLanguage(
+    {
+      ...baseSubmission,
+      message: 'hіjо dе рutа',
+    },
+    createTestEnv()
+  );
+
+  assert.equal(abuse.verdict, 'drop');
+  assert.equal(abuse.match, 'hijo de puta');
+});
+
 test('classifyAbusiveLanguage respects allowlisted phrases to avoid false positives', () => {
   const abuse = classifyAbusiveLanguage(
     {
@@ -137,6 +151,29 @@ test('classifyAbusiveLanguage respects allowlisted phrases to avoid false positi
   );
 
   assert.equal(abuse.verdict, 'allow');
+});
+
+test('classifyAbusiveLanguage avoids business false positives for demand, lawyers, and fraud prevention', () => {
+  const env = createTestEnv({
+    PROFANITY_ALLOWLIST_TERMS: 'anti estafa,anti fraude,prevencion de fraude,prevención de fraude',
+  });
+  const legitimateMessages = [
+    'Necesito captar más demanda para mis servicios.',
+    'Soy abogado y necesito una web mejor.',
+    'Busco una landing de prevención de fraude para ecommerce.',
+  ];
+
+  for (const message of legitimateMessages) {
+    const abuse = classifyAbusiveLanguage(
+      {
+        ...baseSubmission,
+        message,
+      },
+      env
+    );
+
+    assert.equal(abuse.verdict, 'allow', message);
+  }
 });
 
 test('scoreSubmissionForAbuse routes allow, review, and drop correctly', () => {
@@ -239,6 +276,215 @@ test('origin allowlist accepts expected hosts and rejects hostile origins', () =
   assert.equal(isAllowedOrigin('https://nexobase.dev', env), true);
   assert.equal(isAllowedOrigin('https://preview.nexobase.dev', env), true);
   assert.equal(isAllowedOrigin('https://evil.example', env), false);
+});
+
+test('client env usage does not expose server-side contact secrets', async () => {
+  const clientFiles = [
+    '/Users/antonio/Downloads/NEXO BASE/src/sections/DiagnosticOffer.tsx',
+    '/Users/antonio/Downloads/NEXO BASE/src/vite-env.d.ts',
+  ];
+
+  const contents = await Promise.all(clientFiles.map((file) => fs.readFile(file, 'utf8')));
+  const combined = contents.join('\n');
+
+  assert.match(combined, /VITE_TURNSTILE_SITE_KEY/);
+  assert.doesNotMatch(combined, /TURNSTILE_SECRET_KEY/);
+  assert.doesNotMatch(combined, /SMTP_PASS/);
+  assert.doesNotMatch(combined, /CONTACT_FORM_SECRET/);
+});
+
+test('handleContactPost rejects missing Origin with a generic response', async () => {
+  const env = createTestEnv({ NODE_ENV: 'production' });
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  const { token } = createFormSession(now - 5000, env);
+  const request = new Request('https://nexobase.dev/api/contact', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: `nexo_contact_session=${token}`,
+      'X-Forwarded-For': '203.0.113.9',
+      'X-Real-Ip': '203.0.113.9',
+    },
+    body: JSON.stringify({
+      ...baseSubmission,
+      formToken: token,
+    }),
+  });
+
+  const response = await handleContactPost(request, {
+    env,
+    now,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: false }),
+    turnstileVerifier: async () => ({ ok: true }),
+  });
+
+  assert.equal(response.status, 403);
+  assert.deepEqual(await response.json(), {
+    error: 'No se pudo enviar la solicitud ahora mismo. Inténtalo de nuevo en unos minutos.',
+  });
+});
+
+test('handleContactPost rejects malformed JSON and invalid sessions without leaking detail', async () => {
+  const env = createTestEnv({ NODE_ENV: 'production' });
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+
+  const malformedRequest = new Request('https://nexobase.dev/api/contact', {
+    method: 'POST',
+    headers: {
+      Origin: 'https://nexobase.dev',
+      'Content-Type': 'application/json',
+    },
+    body: '{"name":',
+  });
+
+  const malformedResponse = await handleContactPost(malformedRequest, {
+    env,
+    now,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: false }),
+    turnstileVerifier: async () => ({ ok: true }),
+  });
+
+  assert.equal(malformedResponse.status, 400);
+  assert.deepEqual(await malformedResponse.json(), {
+    error: 'No se pudo enviar la solicitud. Revisa los campos e inténtalo otra vez.',
+  });
+
+  const invalidTokenRequest = new Request('https://nexobase.dev/api/contact', {
+    method: 'POST',
+    headers: {
+      Origin: 'https://nexobase.dev',
+      'Content-Type': 'application/json',
+      Cookie: 'nexo_contact_session=wrong-token',
+      'X-Forwarded-For': '203.0.113.9',
+      'X-Real-Ip': '203.0.113.9',
+    },
+    body: JSON.stringify({
+      ...baseSubmission,
+      formToken: 'wrong-token',
+    }),
+  });
+
+  const invalidTokenResponse = await handleContactPost(invalidTokenRequest, {
+    env,
+    now,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: false }),
+    turnstileVerifier: async () => ({ ok: true }),
+  });
+
+  assert.equal(invalidTokenResponse.status, 400);
+  assert.deepEqual(await invalidTokenResponse.json(), {
+    error: 'No se pudo enviar la solicitud. Revisa los campos e inténtalo otra vez.',
+  });
+});
+
+test('handleContactPost rejects too-fast and oversized submissions with generic responses', async () => {
+  const env = createTestEnv({ NODE_ENV: 'production' });
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  const { token } = createFormSession(now, env);
+
+  const tooFastRequest = new Request('https://nexobase.dev/api/contact', {
+    method: 'POST',
+    headers: {
+      Origin: 'https://nexobase.dev',
+      'Content-Type': 'application/json',
+      Cookie: `nexo_contact_session=${token}`,
+      'X-Forwarded-For': '203.0.113.9',
+      'X-Real-Ip': '203.0.113.9',
+    },
+    body: JSON.stringify({
+      ...baseSubmission,
+      formToken: token,
+    }),
+  });
+
+  const tooFastResponse = await handleContactPost(tooFastRequest, {
+    env,
+    now: now + 1000,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: false }),
+    turnstileVerifier: async () => ({ ok: true }),
+  });
+
+  assert.equal(tooFastResponse.status, 400);
+  assert.deepEqual(await tooFastResponse.json(), {
+    error: 'No se pudo enviar la solicitud. Revisa los campos e inténtalo otra vez.',
+  });
+
+  const oversizedToken = createFormSession(now - 5000, env).token;
+  const oversizedBody = JSON.stringify({
+    ...baseSubmission,
+    message: 'x'.repeat(13000),
+    formToken: oversizedToken,
+  });
+  const oversizedRequest = new Request('https://nexobase.dev/api/contact', {
+    method: 'POST',
+    headers: {
+      Origin: 'https://nexobase.dev',
+      'Content-Type': 'application/json',
+      Cookie: `nexo_contact_session=${oversizedToken}`,
+      'Content-Length': String(Buffer.byteLength(oversizedBody)),
+      'X-Forwarded-For': '203.0.113.9',
+      'X-Real-Ip': '203.0.113.9',
+    },
+    body: oversizedBody,
+  });
+
+  const oversizedResponse = await handleContactPost(oversizedRequest, {
+    env,
+    now,
+    stores,
+    firewallRateLimiter: async () => ({ rateLimited: false }),
+    turnstileVerifier: async () => ({ ok: true }),
+  });
+
+  assert.equal(oversizedResponse.status, 413);
+  assert.deepEqual(await oversizedResponse.json(), {
+    error: 'No se pudo enviar la solicitud. Revisa los campos e inténtalo otra vez.',
+  });
+});
+
+test('handleContactPost falls back to the in-memory limiter when the firewall rule is missing', async () => {
+  const env = createTestEnv({ NODE_ENV: 'production' });
+  const stores = createContactStores();
+  const now = Date.UTC(2026, 3, 1, 11, 0, 0);
+  let sendAttempted = false;
+
+  const requests = [0, 10, 20].map((offset, index) =>
+    createSignedPostRequest(
+      {
+        message: `${baseSubmission.message} ${index}`,
+      },
+      env,
+      now + offset
+    )
+  );
+
+  const responses = [];
+  for (const [index, request] of requests.entries()) {
+    responses.push(
+      await handleContactPost(request, {
+        env,
+        now: now + index * 10,
+        stores,
+        firewallRateLimiter: async () => ({ rateLimited: false, error: 'not-found' }),
+        turnstileVerifier: async () => ({ ok: true }),
+        mailSender: async () => {
+          sendAttempted = true;
+        },
+      })
+    );
+  }
+
+  assert.equal(responses[0].status, 200);
+  assert.equal(responses[1].status, 200);
+  assert.equal(responses[2].status, 429);
+  assert.equal(sendAttempted, true);
 });
 
 test('handleContactPost silently absorbs dropped abuse without sending email', async () => {

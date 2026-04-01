@@ -46,6 +46,10 @@ Create a Firewall rule in the Vercel dashboard that matches the SDK rate-limit I
 5. Save the rule.
 6. Publish the Firewall changes.
 
+Important:
+
+- If the Firewall rule is missing or the rate-limit ID does not match `CONTACT_RATE_LIMIT_ID`, the route falls back to the local in-memory limiter. That fallback is intentional for safety, but it is only best-effort on serverless.
+
 Recommended extra dashboard rules:
 
 - `POST /api/contact`

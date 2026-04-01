@@ -100,19 +100,26 @@ const REVIEW_ABUSE_PATTERNS = [
   { value: 'estafadores', reason: 'hostile_accusation', type: 'token' },
   { value: 'timador', reason: 'hostile_accusation', type: 'token' },
   { value: 'timadores', reason: 'hostile_accusation', type: 'token' },
-  { value: 'fraude', reason: 'hostile_accusation', type: 'token' },
   { value: 'estafa', reason: 'hostile_accusation', type: 'token' },
   { value: 'ladron', reason: 'hostile_accusation', type: 'token' },
   { value: 'ladrones', reason: 'hostile_accusation', type: 'token' },
+  { value: 'es un fraude', reason: 'hostile_accusation', type: 'phrase' },
+  { value: 'sois un fraude', reason: 'hostile_accusation', type: 'phrase' },
+  { value: 'fraude total', reason: 'hostile_accusation', type: 'phrase' },
   { value: 'os voy a denunciar', reason: 'legal_threat', type: 'phrase' },
   { value: 'voy a denunciaros', reason: 'legal_threat', type: 'phrase' },
   { value: 'te voy a denunciar', reason: 'legal_threat', type: 'phrase' },
+  { value: 'voy a demandaros', reason: 'legal_threat', type: 'phrase' },
+  { value: 'te voy a demandar', reason: 'legal_threat', type: 'phrase' },
+  { value: 'os voy a demandar', reason: 'legal_threat', type: 'phrase' },
+  { value: 'interponer una demanda', reason: 'legal_threat', type: 'phrase' },
+  { value: 'presentar una demanda', reason: 'legal_threat', type: 'phrase' },
+  { value: 'poner una denuncia', reason: 'legal_threat', type: 'phrase' },
+  { value: 'presentar una denuncia', reason: 'legal_threat', type: 'phrase' },
   { value: 'me habeis robado', reason: 'hostile_accusation', type: 'phrase' },
   { value: 'hablare con mi abogado', reason: 'legal_threat', type: 'phrase' },
-  { value: 'demanda', reason: 'legal_threat', type: 'token' },
-  { value: 'denuncia', reason: 'legal_threat', type: 'token' },
-  { value: 'denunciar', reason: 'legal_threat', type: 'token' },
-  { value: 'abogado', reason: 'legal_threat', type: 'token' },
+  { value: 'mi abogado', reason: 'legal_threat', type: 'phrase' },
+  { value: 'mis abogados', reason: 'legal_threat', type: 'phrase' },
 ];
 
 const contactStores = globalThis.__nexobaseContactStores || createContactStores();
@@ -734,6 +741,10 @@ async function applyRateLimit(request, { env = process.env, ip, now = Date.now()
           retryAfterSeconds: 60,
           source: result.error || 'firewall',
         };
+      }
+
+      if (result.error === 'not-found') {
+        throw new Error('firewall rule not configured');
       }
     } catch (error) {
       console.warn('Firewall rate limit check failed, falling back to local limiter.', {
