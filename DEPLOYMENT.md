@@ -92,3 +92,41 @@ What to verify:
 - The homepage returns CSP, HSTS with `includeSubDomains`, and the other security headers.
 - Review traffic goes only to `CONTACT_QUARANTINE_TO_EMAIL`.
 - Obvious insults and threats return `202 {"ok":true}` and never reach email delivery.
+
+## 6. Search Console y Bing Webmaster
+
+### Google Search Console
+
+1. Abre Search Console y añade la propiedad `nexobase.dev`.
+2. Si eliges verificación por HTML:
+   - añade la meta `google-site-verification` dentro de `index.html`
+   - vuelve a desplegar
+3. Si eliges verificación por DNS:
+   - añade el registro TXT en tu proveedor DNS
+4. Envía el sitemap:
+   - `https://nexobase.dev/sitemap.xml`
+
+### Bing Webmaster Tools
+
+1. Añade el sitio `https://nexobase.dev`.
+2. Si eliges verificación por meta:
+   - añade la meta `msvalidate.01` en `index.html`
+   - vuelve a desplegar
+3. Si eliges verificación por archivo:
+   - sube el archivo de Bing a `public/`
+   - vuelve a desplegar
+4. Envía el sitemap:
+   - `https://nexobase.dev/sitemap.xml`
+
+### Verificación rápida SEO
+
+```bash
+curl -s https://nexobase.dev/robots.txt
+curl -s https://nexobase.dev/sitemap.xml
+```
+
+Comprueba además:
+
+- que `robots.txt` incluye la URL del sitemap
+- que el sitemap contiene solo URLs canónicas públicas
+- que la home incluye `meta robots`, `canonical` y JSON-LD válido
