@@ -8,6 +8,7 @@
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
+    overflow-x: clip;
   }
 
   body {
@@ -15,12 +16,15 @@
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
   }
 
   #root {
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
+    overflow-x: clip;
   }
 }
 

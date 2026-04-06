@@ -12,11 +12,11 @@ import { NeonConnector } from './components/NeonConnector';
 
 function App() {
   return (
-    <div className="relative min-h-screen w-full flex flex-col text-gray-100 font-sans selection:bg-ai-purple/30 bg-black">
+    <div className="relative min-h-screen w-full overflow-x-clip flex flex-col bg-black font-sans text-gray-100 selection:bg-ai-purple/30">
       <Background />
       <Navbar />
       
-      <div className="relative z-10 w-full flex flex-col pt-16 md:pt-20">
+      <div className="relative z-10 w-full overflow-x-clip flex flex-col pt-16 md:pt-20">
         <Hero />
         <NeonConnector direction="ltr" />
         <WhoItsFor />

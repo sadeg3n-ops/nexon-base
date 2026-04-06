@@ -11,8 +11,8 @@ export function NeonConnector({ direction = 'ltr' }: { direction?: 'ltr' | 'rtl'
   const pathLength = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
-    <div ref={ref} className="w-full h-24 md:hidden relative -my-12 z-0 pointer-events-none">
-      <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
+    <div ref={ref} className="relative -my-12 h-24 w-full overflow-hidden pointer-events-none z-0 md:hidden">
+      <svg className="h-full w-full overflow-hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
         <defs>
           <linearGradient id={`neon-grad-${direction}`} x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="rgba(124,58,237,0)" />
