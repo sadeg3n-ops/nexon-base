@@ -5,10 +5,22 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-black text-white antialiased;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 }
 

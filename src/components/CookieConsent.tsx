@@ -231,7 +231,7 @@ export function CookieConsent() {
       ) : null}
 
       {showFloatingButton ? (
-        <div className="fixed bottom-4 right-[-0.65rem] z-[65] flex flex-col items-end gap-3 md:bottom-5 md:right-[-0.8rem]">
+        <div className="fixed bottom-4 right-3 z-[65] flex flex-col items-end gap-3 md:bottom-5 md:right-5">
           {technicalOnlyMessage ? (
             <div className="max-w-[18rem] rounded-2xl border border-white/10 bg-[rgba(12,14,18,0.74)] px-4 py-3 text-xs leading-5 text-white/65 shadow-[0_20px_60px_-38px_rgba(0,0,0,0.9)] backdrop-blur-xl">
               {technicalOnlyMessage}
