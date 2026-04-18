@@ -214,6 +214,7 @@ export function DiagnosticOffer() {
 
   return (
     <section id="diagnostico" className="py-16 md:py-24 px-6 md:px-12 lg:px-24 border-t border-white/5 md:border-t-0">
+      <span id="contacto" className="block scroll-mt-24" aria-hidden="true"></span>
       <div className="max-w-6xl mx-auto">
         
         <motion.div 
@@ -310,7 +311,7 @@ export function DiagnosticOffer() {
                     <p className="text-gray-400 mb-8 max-w-sm">
                       Gracias. Revisaré tu caso y te responderé en un día laborable.
                     </p>
-                    <Button onClick={() => setStatus('idle')} className="bg-[#0a0a0b]/80 border border-white/10 text-white hover:border-ai-purple/50 shadow-[0_0_15px_-5px_rgba(255,255,255,0.1)] flex gap-2 w-full sm:w-auto">
+                    <Button onClick={() => setStatus('idle')} variant="secondary" className="flex gap-2 w-full sm:w-auto mt-4">
                       <RefreshCw size={18} /> Enviar otra solicitud
                     </Button>
                   </motion.div>
@@ -443,7 +444,7 @@ export function DiagnosticOffer() {
                           (challengeRequired && !turnstileToken) ||
                           (challengeRequired && !turnstileSiteKey)
                         }
-                        className="w-full bg-[#0a0a0b]/80 text-white backdrop-blur-xl border border-white/10 hover:border-ai-purple/50 shadow-[0_0_20px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_-5px_rgba(124,58,237,0.4)] transition-all duration-300 transform hover:scale-[1.02] active:scale-95 group font-medium"
+                        className="w-full flex justify-center items-center"
                       >
                         {status === 'loading' || isPreparing ? (
                           <Loader2 className="animate-spin" />

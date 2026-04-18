@@ -1,7 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+:root {
+  /* Colors */
+  --page-bg: #050507;
+  --card-bg: rgba(255, 255, 255, 0.02);
+  --card-hover: rgba(255, 255, 255, 0.04);
+  --accent: #7c3aed;
 
+  /* Borders */
+  --border-soft: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.12);
+
+  /* Geometry */
+  --radius-sm: 4px;
+}
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -12,12 +25,26 @@
   }
 
   body {
-    @apply bg-black text-white antialiased;
+    background-color: var(--page-bg);
+    @apply text-white antialiased;
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
     overflow-x: clip;
     overscroll-behavior-x: none;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
 
   #root {
@@ -26,6 +53,20 @@
     overflow-x: hidden;
     overflow-x: clip;
   }
+}
+
+/* -------------------------------------------
+   SCROLL PROGRESS BAR
+   ------------------------------------------- */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: #8b5cf6; /* accent purple */
+  width: 0%;
+  z-index: 10000;
+  transition: width 0.1s ease-out;
 }
 
 .cc-scroll-lock {
@@ -112,7 +153,39 @@
   font-size: 0.82rem;
   letter-spacing: 0.01em;
 }
+@layer utilities {
+  .section-kicker {
+    @apply text-[0.76rem] font-bold tracking-[0.16em] uppercase text-white/50 mb-3;
+  }
+}
 
+@layer components {
+  .btn-primary {
+    background-color: white;
+    color: black;
+    border-radius: var(--radius-sm);
+    @apply font-[650] transition-colors duration-200 border border-white hover:bg-ai-purple hover:border-ai-purple hover:text-white px-5 py-2.5 md:px-6 md:py-3.5 text-sm md:text-[0.9rem] flex items-center justify-center shadow-none;
+  }
+
+  .btn-secondary {
+    background-color: rgba(255, 255, 255, 0.05); /* bg-white/5 approximation */
+    color: rgba(255, 255, 255, 0.9); /* text-white/90 approximation */
+    border-radius: var(--radius-sm);
+    @apply font-semibold transition-colors duration-200 border border-white/10 hover:bg-ai-purple hover:border-ai-purple hover:text-white px-5 py-2.5 md:px-6 md:py-3.5 text-sm md:text-[0.9rem] flex items-center justify-center;
+  }
+
+  .card-b2b {
+    background-color: var(--card-bg);
+    border-color: var(--border-strong);
+    border-width: 1px;
+    border-radius: var(--radius-sm);
+    @apply border transition-colors duration-200 hover:bg-card-hover;
+  }
+
+  .card-b2b:hover {
+    border-color: rgba(124, 58, 237, 0.3);
+  }
+}
 @keyframes ccFadeUp {
   from {
     opacity: 0;

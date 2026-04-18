@@ -3,6 +3,7 @@ import { Button } from '../components/Button';
 import { Check } from 'lucide-react';
 
 export function Pricing() {
+  const reformServiceHref = '/web-de-captacion-empresas-reformas/';
   const packs = [
     {
       name: 'Web de captación',
@@ -119,15 +120,20 @@ export function Pricing() {
               </ul>
               
               <Button 
+                variant={pack.highlight ? 'primary' : 'secondary'}
                 onClick={scrollToAudit}
-                className={`w-full py-3 relative z-10 transition-transform active:scale-95 duration-300 font-medium ${
-                  pack.highlight
-                    ? 'bg-[#0a0a0b]/80 border border-white/10 text-white hover:border-ai-purple/50 shadow-[0_0_20px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_-5px_rgba(124,58,237,0.4)]'
-                    : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
-                }`}
+                className="w-full relative z-10"
               >
                 Consultar disponibilidad
               </Button>
+              {index === 0 && (
+                <a
+                  href={reformServiceHref}
+                  className="relative z-10 mt-4 text-center text-xs font-medium text-gray-500 underline decoration-white/10 underline-offset-4 transition-colors hover:text-gray-300 hover:decoration-ai-purple/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/50"
+                >
+                  Ver página para empresas de reformas
+                </a>
+              )}
             </motion.div>
           ))}
         </motion.div>
@@ -139,7 +145,13 @@ export function Pricing() {
           transition={{ duration: 0.6, delay: 0.8 }}
           className="text-center text-gray-500 text-sm font-medium mb-16 pb-8 border-b border-white/5"
         >
-          También puedes empezar por la web y añadir lo demás más adelante.
+          <p>También puedes empezar por la web y añadir lo demás más adelante.</p>
+          <a
+            href={reformServiceHref}
+            className="mt-3 inline-flex text-xs text-gray-600 underline decoration-white/10 underline-offset-4 transition-colors hover:text-gray-400 hover:decoration-ai-purple/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/50"
+          >
+            Página específica para empresas de reformas
+          </a>
         </motion.div>
 
         {/* Secondary Block */}

@@ -1,8 +1,22 @@
 /** @type {import('tailwindcss').Config} */
+/* Tailwind Config for Nexo Base System */
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './public/**/*.html'],
   theme: {
     extend: {
+      borderRadius: {
+        'b2b': 'var(--radius-sm)',
+      },
+      colors: {
+        'page-bg': 'var(--page-bg)',
+        'card-bg': 'var(--card-bg)',
+        'card-hover': 'var(--card-hover)',
+        'ai-blue': '#2563EB',
+        'ai-purple': '#7C3AED',
+        'ai-dark': 'var(--page-bg)',
+        'border-soft': 'var(--border-soft)',
+        'border-strong': 'var(--border-strong)',
+      },
       animation: {
         'blob': 'blob 10s infinite',
       },
@@ -14,11 +28,6 @@ export default {
           '100%': { transform: 'translate(0px, 0px) scale(1)' },
         },
       },
-      colors: {
-        'ai-blue': '#2563EB',
-        'ai-purple': '#7C3AED',
-        'ai-dark': '#0a0a0b',
-      }
     },
   },
   plugins: [],

@@ -1,10 +1,6 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
   const faqs = [
     {
       q: '¿Tengo que montar todo desde el principio?',
@@ -47,16 +43,17 @@ export function FAQ() {
   };
 
   return (
-    <section id="faq" className="py-16 md:py-24 px-6 md:px-12 lg:px-24 border-t border-white/5 md:border-t-0">
+    <section id="faq" className="py-16 md:py-24 px-6 md:px-12 lg:px-24">
       <div className="max-w-4xl mx-auto">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.6 }}
+          className="mb-12"
         >
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+          <p className="section-kicker text-center md:text-left">FAQ</p>
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 text-center md:text-left tracking-[-0.035em]">
             Preguntas frecuentes
           </h2>
         </motion.div>
@@ -66,50 +63,23 @@ export function FAQ() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-50px" }}
-          className="space-y-4"
+          className="flex flex-col"
         >
           {faqs.map((faq, index) => (
-            <motion.div 
+            <motion.details
               key={index} 
               variants={itemVariants}
-              className={`border transition-colors duration-300 rounded-xl overflow-hidden ${
-                openIndex === index 
-                  ? 'bg-white/5 border-ai-purple/30' 
-                  : 'bg-white/[0.01] border-white/5 hover:bg-white/[0.03]'
-              }`}
+              className="group border-t border-white/10 first:border-none py-6"
             >
-              <button 
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
-              >
-                <span className={`font-medium text-lg pr-8 transition-colors ${openIndex === index ? 'text-white' : 'text-gray-300'}`}>
+              <summary className="flex items-center justify-between cursor-pointer py-2 list-none [&::-webkit-details-marker]:hidden marker:hidden focus:outline-none outline-none">
+                <h3 className="text-lg text-white font-medium group-hover:text-ai-purple transition-colors duration-200 pr-8">
                   {faq.q}
-                </span>
-                <motion.div
-                  animate={{ rotate: openIndex === index ? 180 : 0 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                  className="shrink-0"
-                >
-                  <ChevronDown className={openIndex === index ? 'text-ai-purple' : 'text-gray-500'} />
-                </motion.div>
-              </button>
-              
-              <AnimatePresence initial={false}>
-                {openIndex === index && (
-                  <motion.div 
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="overflow-hidden px-6"
-                  >
-                    <div className="pb-5 text-gray-400">
-                      {faq.a}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
+                </h3>
+              </summary>
+              <div className="pt-4 pb-2 pr-8 text-white/70 leading-relaxed text-[1.05rem]">
+                <p>{faq.a}</p>
+              </div>
+            </motion.details>
           ))}
         </motion.div>
       </div>

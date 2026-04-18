@@ -24,9 +24,9 @@ export function Navbar() {
           <button onClick={() => scrollTo('faq')} className="hover:text-white transition-colors">FAQ</button>
         </nav>
 
-        <Button onClick={() => scrollTo('diagnostico')} className="text-xs sm:text-sm px-4 py-2 sm:px-5 md:px-6 md:py-2.5 bg-[#0a0a0b]/80 text-white backdrop-blur-md border border-white/10 hover:border-ai-purple/50 shadow-[0_0_15px_-5px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_-5px_rgba(124,58,237,0.3)] font-medium whitespace-nowrap rounded-lg md:rounded-md">
+        <Button onClick={() => scrollTo('diagnostico')} className="text-xs sm:text-sm px-4 py-2 sm:px-5 md:px-6 whitespace-nowrap">
           <span className="md:hidden">Diagnóstico</span>
-          <span className="hidden md:inline">Solicitar diagnóstico gratuito</span>
+          <span className="hidden md:inline">Solicitar diagnóstico</span>
         </Button>
       </div>
     </header>

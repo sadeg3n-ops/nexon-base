@@ -58,9 +58,8 @@ export function WhoItsFor() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            whileHover={{ backgroundColor: "rgba(255,255,255,0.04)" }}
             transition={{ duration: 0.8 }}
-            className="bg-white/[0.02] border border-white/5 backdrop-blur-md rounded-2xl p-8 md:p-10 transition-colors"
+            className="card-b2b p-8 md:p-10"
           >
             <h3 className="text-xl font-semibold text-white mb-8 flex items-center gap-3">
               <span className="w-8 h-8 rounded bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
@@ -89,9 +88,8 @@ export function WhoItsFor() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="bg-white/[0.01] border border-red-500/10 backdrop-blur-md rounded-2xl p-8 md:p-10 transition-colors"
+            className="card-b2b border-red-500/10 hover:border-red-500/20 p-8 md:p-10"
           >
             <h3 className="text-xl font-semibold text-white mb-8 flex items-center gap-3 opacity-90">
               <span className="w-8 h-8 rounded bg-red-500/10 text-red-400 flex items-center justify-center shrink-0">

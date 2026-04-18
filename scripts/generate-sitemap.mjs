@@ -16,6 +16,7 @@ const routes = [
   '/politica-privacidad/',
   '/politica-cookies/',
   '/condiciones/',
+  '/web-de-captacion-empresas-reformas/',
 ];
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

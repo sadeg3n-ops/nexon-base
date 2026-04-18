@@ -74,8 +74,7 @@ export function SystemLayers() {
               <motion.div 
                 key={index}
                 variants={itemVariants}
-                whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.04)" }}
-                className={`flex flex-col sm:flex-row items-start sm:items-center gap-6 bg-white/[0.02] border border-white/5 p-6 rounded-2xl transition-colors cursor-default`}
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-6 card-b2b p-6"
               >
                 <div className={`p-4 rounded-xl ${layer.color} shrink-0`}>
                   {layer.icon}
