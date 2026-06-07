@@ -50,11 +50,11 @@ const siteCopy = {
       terms: { label: 'Condiciones', href: '/es/condiciones/' },
     },
     hero: {
-      eyebrow: 'Web y sistema de captación para negocios',
-      title: 'Tu web debería captar.',
-      highlight: 'Tu sistema debería evitar que se escapen oportunidades.',
+      eyebrow: 'Web y sistema de captación para negocios en España',
+      title: 'Tu web debería atraer clientes.',
+      highlight: 'Tu sistema debería evitar que se pierdan.',
       description:
-        'Empieza con una base clara para captar mejor hoy y ampliar después sin rehacerlo todo.',
+        'Diseñamos webs de captación y sistemas de seguimiento para pequeñas y medianas empresas que quieren captar más clientes, responder mejor y crecer de forma estructurada.',
       cta: 'Solicitar diagnóstico gratuito',
       supportPrimary: 'Respuesta en 24h',
       supportSecondary: 'Te diremos por dónde empezaríamos',
@@ -63,7 +63,7 @@ const siteCopy = {
       cards: [
         {
           title: 'Web de captación',
-          copy: 'Página clara para que contactar sea fácil.',
+          copy: 'Página visual y enfocada en conversión',
         },
         {
           title: 'Posicionamiento SEO',
@@ -71,15 +71,15 @@ const siteCopy = {
         },
         {
           title: 'Seguimiento de oportunidades',
-          copy: 'Visibilidad sobre cada contacto y el siguiente paso.',
+          copy: 'Control sobre cada contacto y su siguiente paso.',
         },
         {
           title: 'Reservas online',
-          copy: 'Reservas más fáciles, más tiempo para el equipo.',
+          copy: 'Sistema de reservas más rápidas, más tiempo para el equipo.',
         },
         {
           title: 'Automatizaciones y pagos',
-          copy: 'Recordatorios, confirmaciones y cobros sin caos.',
+          copy: 'Recordatorios, confirmaciones y cobros organizados.',
         },
       ],
     },
@@ -111,23 +111,23 @@ const siteCopy = {
       layers: [
         {
           title: 'Web de captación',
-          text: 'Página clara para que el cliente contacte fácil y tu equipo reciba mejor cada oportunidad.',
+          text: 'Página visual y enfocada en conversión',
         },
         {
           title: 'Posicionamiento SEO',
-          text: 'Atrae visitas de clientes que ya buscan tus servicios de forma activa.',
+          text: 'Atrae visitas de clientes con intención de compra.',
         },
         {
           title: 'Seguimiento de oportunidades',
-          text: 'Visibilidad sobre cada contacto, su estado y el siguiente paso.',
+          text: 'Control sobre cada contacto y su siguiente paso.',
         },
         {
           title: 'Reservas online',
-          text: 'Menos fricción al reservar, más tiempo para el equipo.',
+          text: 'Sistema de reservas más rápidas, más tiempo para el equipo.',
         },
         {
-          title: 'Automatizaciones',
-          text: 'Recordatorios y tareas repetitivas que dejan de depender del equipo.',
+          title: 'Automatizaciones y pagos',
+          text: 'Recordatorios, confirmaciones y cobros organizados.',
         },
       ],
     },
@@ -388,11 +388,11 @@ const siteCopy = {
       terms: { label: 'Terms', href: '/condiciones/' },
     },
     hero: {
-      eyebrow: 'Website and lead system for businesses',
-      title: 'Your website should capture leads.',
-      highlight: 'Your system should stop opportunities from slipping away.',
+      eyebrow: 'Website and lead system for businesses in Spain',
+      title: 'Your website should attract clients.',
+      highlight: 'Your system should stop them from slipping away.',
       description:
-        'Start with a clear base to capture better today and expand later without rebuilding everything.',
+        'We design lead websites and tracking systems for small and medium-sized businesses that want to capture more clients, respond better and grow in a structured way.',
       cta: 'Request a free diagnostic',
       supportPrimary: 'Reply within 24h',
       supportSecondary: 'We will tell you where we would start',
@@ -401,7 +401,7 @@ const siteCopy = {
       cards: [
         {
           title: 'Lead website',
-          copy: 'A clear page that makes it easy to get in touch.',
+          copy: 'Visual page focused on conversion',
         },
         {
           title: 'SEO Optimization',
@@ -409,15 +409,15 @@ const siteCopy = {
         },
         {
           title: 'Opportunity tracking',
-          copy: 'Visibility into every contact and the next step.',
+          copy: 'Control over each contact and their next step.',
         },
         {
           title: 'Online bookings',
-          copy: 'Easier bookings, more time for the team.',
+          copy: 'Faster booking system, more time for the team.',
         },
         {
           title: 'Automations and payments',
-          copy: 'Reminders, confirmations and payments without chaos.',
+          copy: 'Organized reminders, confirmations and payments.',
         },
       ],
     },
@@ -449,23 +449,23 @@ const siteCopy = {
       layers: [
         {
           title: 'Lead website',
-          text: 'A clear page so the client can get in touch easily and your team can receive each opportunity better.',
+          text: 'Visual page focused on conversion',
         },
         {
           title: 'SEO Optimization',
-          text: 'Attract traffic from customers actively searching for your services.',
+          text: 'Attract visits from customers with buying intent.',
         },
         {
           title: 'Opportunity tracking',
-          text: 'Visibility into every contact, their status and the next step.',
+          text: 'Control over each contact and their next step.',
         },
         {
           title: 'Online bookings',
-          text: 'Less friction when booking, more time for the team.',
+          text: 'Faster booking system, more time for the team.',
         },
         {
-          title: 'Automations',
-          text: 'Reminders and repetitive tasks that stop depending on the team.',
+          title: 'Automations and payments',
+          text: 'Organized reminders, confirmations and payments.',
         },
       ],
     },
