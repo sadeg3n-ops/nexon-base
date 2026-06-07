@@ -35,8 +35,13 @@ export function HowItWorks() {
             whileInView={{ width: 80 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 1, delay: 0.3, type: "spring" }}
-            className="h-1 bg-highlight rounded-full bg-gradient-to-r from-ai-blue to-ai-purple"
+            className="h-1 bg-highlight rounded-full bg-gradient-to-r from-ai-blue to-ai-purple mb-6"
           ></motion.div>
+          {copy.howItWorks.description && (
+            <p className="text-lg text-gray-400 max-w-2xl">
+              {copy.howItWorks.description}
+            </p>
+          )}
         </motion.div>
 
         <div ref={timelineRef} className="relative pl-8 md:pl-0">

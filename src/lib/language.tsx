@@ -137,26 +137,27 @@ const siteCopy = {
     },
     howItWorks: {
       title: 'Cómo trabajamos',
+      description: 'Un proceso de cuatro pasos para montar el sistema de captación que tu negocio necesita, sin pagar por lo que no tiene sentido todavía.',
       steps: [
         {
           num: '01',
-          title: 'Detectamos dónde se rompe',
-          text: 'Revisamos captación, seguimiento y atascos reales.',
+          title: 'Analizamos dónde se pierden oportunidades',
+          text: 'Revisamos cómo entra un cliente hoy: web, canales de contacto, seguimiento y puntos donde puede estar fallando el proceso.',
         },
         {
           num: '02',
-          title: 'Priorizamos impacto',
-          text: 'Empezamos por lo que más mejora orden, respuesta y conversión.',
+          title: 'Priorizamos lo que más impacto tiene',
+          text: 'Identificamos los cambios que mejoran más la captación, la respuesta y la conversión de contactos en clientes.',
         },
         {
           num: '03',
           title: 'Construimos lo necesario',
-          text: 'Diseñamos la web y los módulos que sí tienen sentido.',
+          text: 'Diseñamos la web y montamos la estructura que resuelve los problemas cotidianos de tu negocio, sin añadir complejidad innecesaria.',
         },
         {
           num: '04',
-          title: 'Lanzamos y ampliamos',
-          text: 'Empiezas por lo esencial y amplías sin rehacerlo todo.',
+          title: 'Lanzamos y ampliamos sin rehacerlo todo',
+          text: 'Empiezas con una base sólida. Cada ampliación se añade encima sin tirar lo anterior.',
         },
       ],
     },
@@ -479,26 +480,27 @@ const siteCopy = {
     },
     howItWorks: {
       title: 'How we work',
+      description: 'A four-step process to build the lead capture system your business needs, without paying for what does not make sense yet.',
       steps: [
         {
           num: '01',
-          title: 'We spot where it breaks',
-          text: 'We review lead capture, follow-up and real bottlenecks.',
+          title: 'We analyse where opportunities are being lost',
+          text: 'We review how a client finds you today: website, contact channels, follow-up and the points where the process may be failing.',
         },
         {
           num: '02',
-          title: 'We prioritize impact',
-          text: 'We start with what improves order, response and conversion the most.',
+          title: 'We prioritise what has the most impact',
+          text: 'We identify the changes that most improve lead capture, response time and the conversion of contacts into clients.',
         },
         {
           num: '03',
           title: 'We build what is needed',
-          text: 'We design the website and the modules that actually make sense.',
+          text: 'We design the website and set up the structure that solves your day-to-day business problems, without adding unnecessary complexity.',
         },
         {
           num: '04',
-          title: 'We launch and expand',
-          text: 'You start with the essentials and expand without rebuilding everything.',
+          title: 'We launch and expand without rebuilding everything',
+          text: 'You start with a solid foundation. Each addition is built on top without throwing away what came before.',
         },
       ],
     },
