@@ -227,31 +227,31 @@ const siteCopy = {
       items: [
         {
           q: '¿Tengo que montar todo desde el principio?',
-          a: 'No. Muchas veces lo más lógico es empezar por la web de captación y añadir lo demás cuando el negocio lo pide.',
+          a: 'No. Lo más habitual es empezar por la web de captación y añadir módulos según lo que el negocio vaya necesitando. Cada pieza se construye sobre la anterior, así que no hay que rehacer nada cuando decides ampliar. Muchos negocios en España empiezan solo por la web y en pocas semanas ya tienen claro qué necesitan añadir.',
         },
         {
           q: '¿Puedo empezar solo por la web?',
-          a: 'Sí. Es la base más lógica si ahora mismo lo que necesitas es mejorar cómo entran los contactos.',
+          a: 'Sí, y muchas veces es lo más lógico. Si tu problema principal es que tu web actual no convierte visitas en contactos, empezamos por ahí. El resto del sistema de captación se puede añadir después, cuando tenga sentido, sin tocar lo que ya está funcionando.',
         },
         {
           q: '¿Y si ya tengo web o CRM?',
-          a: 'Se revisa. Si algo de lo que ya tienes sirve, se aprovecha. La idea no es rehacer por rehacer.',
+          a: 'Depende de lo que tengas y de cómo esté funcionando. Si tu web actual ya capta bien, no la tocamos. Si tienes un CRM pero no lo estás usando de forma efectiva, revisamos si tiene sentido integrarlo o simplificarlo. El objetivo no es vender herramientas nuevas, sino que el sistema funcione.',
         },
         {
           q: '¿Esto sirve para cualquier tipo de negocio?',
-          a: 'Sí. Encaja en negocios que necesitan captar mejor, hacer seguimiento y reducir el caos manual en su operativa comercial.',
+          a: 'Está pensado para pequeñas y medianas empresas en España que ya tienen un flujo de clientes potenciales pero pierden oportunidades por falta de sistema. Funciona bien en sectores de servicios: clínicas, asesorías, inmobiliarias, academias, centros de bienestar, empresas B2B y negocios locales con ticket medio o alto.',
         },
         {
           q: '¿Cuánto tarda en estar listo?',
-          a: 'Depende del alcance. Una web de captación simple no requiere el mismo tiempo que un sistema completo. Eso se define en el diagnóstico.',
+          a: 'Una web de captación básica suele estar lista en dos o tres semanas. Un sistema de captación completo, con SEO, seguimiento y reservas, entre cuatro y seis semanas dependiendo del negocio. Te damos un plazo claro antes de empezar, sin sorpresas.',
         },
         {
           q: '¿Qué incluye el mantenimiento mensual?',
-          a: 'Incluye soporte, seguridad, copias, mantenimiento del sistema y pequeños cambios para que todo siga funcionando sin fricciones.',
+          a: 'Seguridad web, copias de seguridad automáticas, actualizaciones del sistema y soporte para ajustes e integraciones menores. El objetivo es que el sistema siga funcionando sin que tengas que ocuparte de la parte técnica ni depender de un desarrollador para cada pequeño cambio.',
         },
         {
           q: '¿El diagnóstico es una venta encubierta?',
-          a: 'No. El objetivo es decirte qué tiene sentido montar ahora y qué no.',
+          a: 'No. El diagnóstico es una revisión real de cómo está entrando hoy un cliente en tu negocio: qué está funcionando, dónde se pierden oportunidades y por dónde tendría más sentido empezar. Si después de eso decides que no quieres avanzar, no pasa nada. No hay presión ni seguimiento comercial agresivo.',
         },
       ],
     },
@@ -571,31 +571,31 @@ const siteCopy = {
       items: [
         {
           q: 'Do I need to build everything from the start?',
-          a: 'No. Very often the smartest move is to start with the lead website and add the rest when the business actually asks for it.',
+          a: 'No. The most common approach is to start with the lead website and add modules as the business needs them. Each piece builds on the previous one, so nothing needs to be rebuilt when you decide to expand. Many businesses in Spain start with just the website and within a few weeks they already know what they need to add.',
         },
         {
           q: 'Can I start with just the website?',
-          a: 'Yes. It is the most logical base if what you need right now is to improve how contacts come in.',
+          a: 'Yes, and it is often the most logical move. If your main problem is that your current website does not convert visits into contacts, we start there. The rest of the lead system can be added later, when it makes sense, without touching what is already working.',
         },
         {
           q: 'What if I already have a website or a CRM?',
-          a: 'We review it. If something you already have is useful, we keep it. The idea is not to rebuild just for the sake of it.',
+          a: 'It depends on what you have and how it is working. If your current website already captures leads well, we leave it alone. If you have a CRM but are not using it effectively, we review whether it makes sense to integrate or simplify it. The goal is not to sell new tools, but to make the system work.',
         },
         {
           q: 'Does this work for any kind of business?',
-          a: 'Yes. It fits businesses that need to capture better, follow up properly and reduce manual chaos in their commercial operation.',
+          a: 'It is designed for small and medium-sized businesses in Spain that already have a flow of potential clients but are losing opportunities due to lack of system. It works well in service sectors: clinics, advisory firms, estate agencies, academies, wellness centres, B2B companies and local businesses with a medium or high ticket.',
         },
         {
           q: 'How long does it take to be ready?',
-          a: 'It depends on the scope. A simple lead website does not take the same time as a full system. We define that in the diagnostic.',
+          a: 'A basic lead website is usually ready in two to three weeks. A full lead system, with SEO, tracking and bookings, takes between four and six weeks depending on the business. We give you a clear timeline before starting, no surprises.',
         },
         {
           q: 'What does the monthly maintenance include?',
-          a: 'It includes support, security, backups, system maintenance and small changes so everything keeps working without friction.',
+          a: 'Web security, automatic backups, system updates and support for minor adjustments and integrations. The goal is to keep the system running without you having to deal with the technical side or depend on a developer for every small change.',
         },
         {
           q: 'Is the diagnostic a disguised sales call?',
-          a: 'No. The goal is to tell you what makes sense to build now and what does not.',
+          a: 'No. The diagnostic is a real review of how a client is entering your business today: what is working, where opportunities are being lost and where it would make most sense to start. If after that you decide you do not want to move forward, that is fine. There is no pressure or aggressive commercial follow-up.',
         },
       ],
     },
