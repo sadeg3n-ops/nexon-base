@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Layers, Globe, Route, CalendarCheck, Zap, Plus } from 'lucide-react';
+import { Layers, Globe, Route, CalendarCheck, Zap, Plus, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../lib/language';
 
 export function SystemLayers() {
@@ -27,9 +27,16 @@ export function SystemLayers() {
       hoverBorder: 'hover:border-emerald-500/30 hover:shadow-[0_0_25px_-12px_rgba(16,185,129,0.25)]'
     },
     {
-      icon: <Zap className="text-pink-500" size={32} />,
+      icon: <TrendingUp className="text-amber-500" size={32} />,
       title: copy.systemLayers.layers[3].title,
       text: copy.systemLayers.layers[3].text,
+      color: 'bg-amber-500/10 border-amber-500/20',
+      hoverBorder: 'hover:border-amber-500/30 hover:shadow-[0_0_25px_-12px_rgba(245,158,11,0.25)]'
+    },
+    {
+      icon: <Zap className="text-pink-500" size={32} />,
+      title: copy.systemLayers.layers[4].title,
+      text: copy.systemLayers.layers[4].text,
       color: 'bg-pink-500/10 border-pink-500/20',
       hoverBorder: 'hover:border-pink-500/30 hover:shadow-[0_0_25px_-12px_rgba(236,72,153,0.25)]'
     }

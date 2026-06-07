@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '../components/Button';
-import { ArrowRight, Globe, BarChart2, Calendar, Zap, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Globe, BarChart2, Calendar, Zap, CheckCircle2, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../lib/language';
 
 export function Hero() {
@@ -108,7 +108,8 @@ export function Hero() {
                 { icon: <Globe size={24} />, ...copy.hero.cards[0], color: "text-ai-purple", bg: "bg-ai-purple/8", border: "hover:border-ai-purple/30", left: "0" },
                 { icon: <BarChart2 size={24} />, ...copy.hero.cards[1], color: "text-ai-blue", bg: "bg-ai-blue/8", border: "hover:border-ai-blue/30", left: "1rem" },
                 { icon: <Calendar size={24} />, ...copy.hero.cards[2], color: "text-emerald-500", bg: "bg-emerald-500/8", border: "hover:border-emerald-500/30", left: "2rem" },
-                { icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/><polyline points="14 2 14 8 20 8"/><path d="M2 15h10"/><path d="M9 18l3-3-3-3"/></svg>, ...copy.hero.cards[3], color: "text-pink-500", bg: "bg-pink-500/8", border: "hover:border-pink-500/30", left: "3rem" },
+                { icon: <TrendingUp size={24} />, ...copy.hero.cards[3], color: "text-amber-400", bg: "bg-amber-400/8", border: "hover:border-amber-400/30", left: "3rem" },
+                { icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/><polyline points="14 2 14 8 20 8"/><path d="M2 15h10"/><path d="M9 18l3-3-3-3"/></svg>, ...copy.hero.cards[4], color: "text-pink-500", bg: "bg-pink-500/8", border: "hover:border-pink-500/30", left: "4rem" },
               ].map((layer, i) => (
                 <motion.div 
                   key={i}

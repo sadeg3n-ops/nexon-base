@@ -74,6 +74,10 @@ const siteCopy = {
           copy: 'Reservas más fáciles, más tiempo para el equipo.',
         },
         {
+          title: 'Posicionamiento SEO',
+          copy: 'Atrae visitas de clientes con intención de compra.',
+        },
+        {
           title: 'Automatizaciones y pagos',
           copy: 'Recordatorios, confirmaciones y cobros sin caos.',
         },
@@ -103,7 +107,7 @@ const siteCopy = {
       description:
         'Montamos primero lo que más impacto tiene. Lo demás se añade cuando el negocio lo necesita.',
       addOnsTitle: 'Ampliaciones cuando tenga sentido',
-      addOns: ['Emails automáticos', 'Pagos online', 'SEO / GEO / AEO'],
+      addOns: ['Emails automáticos', 'Pagos online', 'Área de clientes'],
       layers: [
         {
           title: 'Web de captación',
@@ -116,6 +120,10 @@ const siteCopy = {
         {
           title: 'Reservas online',
           text: 'Menos fricción al reservar, más tiempo para el equipo.',
+        },
+        {
+          title: 'Posicionamiento SEO',
+          text: 'Atrae visitas de clientes que ya buscan tus servicios de forma activa.',
         },
         {
           title: 'Automatizaciones',
@@ -179,29 +187,33 @@ const siteCopy = {
         {
           name: 'Sistema de captación',
           price: 'A medida',
-          text: 'Para negocios que necesitan más orden, seguimiento y reservas.',
-          includes: ['Web de captación', 'Seguimiento de oportunidades', 'Reservas online'],
-        },
-        {
-          name: 'Sistema completo',
-          price: 'A medida',
-          text: 'La opción más completa para captar, ordenar y automatizar.',
+          text: 'Para negocios que necesitan más orden, seguimiento, reservas y SEO.',
           includes: [
             'Web de captación',
             'Seguimiento de oportunidades',
             'Reservas online',
-            'Emails automáticos',
-            'Pagos online',
-            'SEO / GEO / AEO',
+            'Posicionamiento SEO básico'
+          ],
+        },
+        {
+          name: 'Sistema completo',
+          price: 'A medida',
+          text: 'La opción más completa para captar, ordenar, posicionar y automatizar.',
+          includes: [
+            'Web de captación',
+            'Seguimiento de oportunidades',
+            'Reservas online',
+            'Posicionamiento SEO avanzado',
+            'Emails automáticos y pagos online',
           ],
         },
       ],
       modules: [
         'Seguimiento de oportunidades',
         'Reservas online',
+        'Posicionamiento SEO',
         'Emails automáticos',
         'Pagos online',
-        'SEO / GEO / AEO',
       ],
     },
     faq: {
@@ -400,6 +412,10 @@ const siteCopy = {
           copy: 'Easier bookings, more time for the team.',
         },
         {
+          title: 'SEO Optimization',
+          copy: 'Attract visits from customers with buying intent.',
+        },
+        {
           title: 'Automations and payments',
           copy: 'Reminders, confirmations and payments without chaos.',
         },
@@ -429,7 +445,7 @@ const siteCopy = {
       description:
         'We build what has the biggest impact first. Everything else gets added when the business actually needs it.',
       addOnsTitle: 'Add-ons when they make sense',
-      addOns: ['Automated emails', 'Online payments', 'SEO / GEO / AEO'],
+      addOns: ['Automated emails', 'Online payments', 'Client portal'],
       layers: [
         {
           title: 'Lead website',
@@ -442,6 +458,10 @@ const siteCopy = {
         {
           title: 'Online bookings',
           text: 'Less friction when booking, more time for the team.',
+        },
+        {
+          title: 'SEO Optimization',
+          text: 'Attract traffic from customers actively searching for your services.',
         },
         {
           title: 'Automations',
@@ -505,29 +525,33 @@ const siteCopy = {
         {
           name: 'Lead system',
           price: 'Custom',
-          text: 'For businesses that need more order, follow-up and bookings.',
-          includes: ['Lead website', 'Opportunity tracking', 'Online bookings'],
-        },
-        {
-          name: 'Full system',
-          price: 'Custom',
-          text: 'The most complete option to capture, organize and automate.',
+          text: 'For businesses that need more order, follow-up, bookings and SEO.',
           includes: [
             'Lead website',
             'Opportunity tracking',
             'Online bookings',
-            'Automated emails',
-            'Online payments',
-            'SEO / GEO / AEO',
+            'Basic SEO optimization'
+          ],
+        },
+        {
+          name: 'Full system',
+          price: 'Custom',
+          text: 'The most complete option to capture, organize, rank and automate.',
+          includes: [
+            'Lead website',
+            'Opportunity tracking',
+            'Online bookings',
+            'Advanced SEO optimization',
+            'Automated emails and online payments',
           ],
         },
       ],
       modules: [
         'Opportunity tracking',
         'Online bookings',
+        'SEO Optimization',
         'Automated emails',
         'Online payments',
-        'SEO / GEO / AEO',
       ],
     },
     faq: {
