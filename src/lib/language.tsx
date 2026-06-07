@@ -103,31 +103,35 @@ const siteCopy = {
       ],
     },
     systemLayers: {
-      title: 'Empieza por la base. Amplía cuando de verdad tenga sentido.',
+      title: 'Empieza por prioritario. Amplía cuando el negocio lo pida.',
       description:
-        'Montamos primero lo que más impacto tiene. Lo demás se añade cuando el negocio lo necesita.',
-      addOnsTitle: 'Ampliaciones cuando tenga sentido',
-      addOns: ['Emails automáticos', 'Pagos online', 'Área de clientes'],
+        'No hace falta montarlo todo a la vez. Construimos primero la web y el sistema de captación que más resultado tiene para tu negocio, y añadimos el resto cuando de verdad tiene sentido.',
+      addOnsTitle: 'Ampliaciones disponibles cuando tenga sentido',
+      addOns: [
+        'Emails automáticos para nutrir y recuperar contactos',
+        'Pagos online integrados en el proceso de reserva o captación',
+        'Área privada de clientes',
+      ],
       layers: [
         {
           title: 'Web de captación',
-          text: 'Página visual y enfocada en conversión',
+          text: 'Diseño web orientado a conversión: página visual y moderna, pensada para que el cliente potencial contacte fácil y tu equipo reciba oportunidades ya filtradas.',
         },
         {
           title: 'Posicionamiento SEO',
-          text: 'Atrae visitas de clientes con intención de compra.',
+          text: 'Atrae tráfico cualificado de clientes que ya buscan tus servicios en Google. Sin depender solo de recomendaciones o redes sociales.',
         },
         {
           title: 'Seguimiento de oportunidades',
-          text: 'Control sobre cada contacto y su siguiente paso.',
+          text: 'Gestión de contactos centralizada: visibilidad sobre cada cliente potencial, en qué punto está y cuál es el siguiente paso.',
         },
         {
           title: 'Reservas online',
-          text: 'Sistema de reservas más rápidas, más tiempo para el equipo.',
+          text: 'Sistema de reservas integrado en tu web. Más rápido para el cliente, menos gestión manual para tu equipo.',
         },
         {
-          title: 'Automatizaciones y pagos',
-          text: 'Recordatorios, confirmaciones y cobros organizados.',
+          title: 'Automatizaciones',
+          text: 'Recordatorios, confirmaciones y tareas repetitivas que se ejecutan solas. Tu equipo deja de cargar con el sistema.',
         },
       ],
     },
@@ -441,31 +445,35 @@ const siteCopy = {
       ],
     },
     systemLayers: {
-      title: 'Start with the base. Expand when it truly makes sense.',
+      title: 'Start with what matters most. Expand when the business demands it.',
       description:
-        'We build what has the biggest impact first. Everything else gets added when the business actually needs it.',
-      addOnsTitle: 'Add-ons when they make sense',
-      addOns: ['Automated emails', 'Online payments', 'Client portal'],
+        'No need to build everything at once. We start with the website and lead system that delivers the most impact for your business, and add the rest when it truly makes sense.',
+      addOnsTitle: 'Available add-ons when they make sense',
+      addOns: [
+        'Automated emails to nurture and recover contacts',
+        'Online payments integrated into the booking or lead capture process',
+        'Private client portal',
+      ],
       layers: [
         {
           title: 'Lead website',
-          text: 'Visual page focused on conversion',
+          text: 'Conversion-focused web design: a visual and modern page, built so potential clients can get in touch easily and your team receives pre-filtered opportunities.',
         },
         {
           title: 'SEO Optimization',
-          text: 'Attract visits from customers with buying intent.',
+          text: 'Attract qualified traffic from clients already searching for your services on Google. Without relying only on referrals or social media.',
         },
         {
           title: 'Opportunity tracking',
-          text: 'Control over each contact and their next step.',
+          text: 'Centralised contact management: visibility into each potential client, where they are in the process and what the next step is.',
         },
         {
           title: 'Online bookings',
-          text: 'Faster booking system, more time for the team.',
+          text: 'Booking system integrated into your website. Faster for the client, less manual management for your team.',
         },
         {
-          title: 'Automations and payments',
-          text: 'Organized reminders, confirmations and payments.',
+          title: 'Automations',
+          text: 'Reminders, confirmations and repetitive tasks that run on their own. Your team stops carrying the system.',
         },
       ],
     },
