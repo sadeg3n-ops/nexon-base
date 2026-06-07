@@ -742,7 +742,7 @@ function detectInitialLanguage(): Language {
     return stored;
   }
 
-  return window.navigator.language.toLowerCase().startsWith('es') ? 'es' : 'en';
+  return 'es';
 }
 
 function updateMetaTag(selector: string, value: string) {
@@ -768,13 +768,7 @@ function applyMetadata(copy: SiteCopy) {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => detectInitialLanguage());
-  const [showSelector, setShowSelector] = useState(() => {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-
-    return !readLanguageCookie();
-  });
+  const [showSelector, setShowSelector] = useState(false);
 
   const copy = useMemo(() => siteCopy[language], [language]);
 

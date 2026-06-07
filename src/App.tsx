@@ -9,7 +9,6 @@ import { FAQ } from './sections/FAQ';
 import { DiagnosticOffer } from './sections/DiagnosticOffer';
 import { CookieConsent } from './components/CookieConsent';
 import { NeonConnector } from './components/NeonConnector';
-import { LanguageGate } from './components/LanguageGate';
 import { useLanguage } from './lib/language';
 
 function App() {
@@ -19,7 +18,6 @@ function App() {
     <div className="relative min-h-screen w-full overflow-x-clip flex flex-col text-gray-100 font-sans selection:bg-ai-purple/30 bg-black">
       <Background />
       <Navbar />
-      <LanguageGate />
       
       <div className="relative z-10 w-full overflow-x-clip flex flex-col pt-16 md:pt-20">
         <Hero />
