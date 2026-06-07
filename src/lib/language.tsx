@@ -256,21 +256,33 @@ const siteCopy = {
       ],
     },
     diagnostic: {
-      title: 'Solicita un diagnóstico gratuito',
-      description: 'Cuéntame cómo entra hoy un cliente y te diré por dónde empezaría.',
+      title: 'Solicita tu diagnóstico gratuito',
+      description:
+        'Cuéntanos cómo entra hoy un cliente en tu negocio y te diremos exactamente por dónde empezaríamos a mejorar tu sistema de captación.',
       checklist: [
-        'Revisión rápida de tu sistema actual',
-        'Detección de bloqueos',
-        'Recomendación clara de por dónde empezar',
-        'Sin presión comercial',
+        'Revisión rápida de tu web y proceso de captación actual',
+        'Detección de los puntos donde se pierden oportunidades',
+        'Recomendación clara y sin rodeos de por dónde empezar',
+        'Sin presión comercial ni seguimiento agresivo',
       ],
+      stepsTitle: 'Así funciona',
       steps: [
-        'Revisamos tu caso',
-        'Te decimos qué montaría primero',
-        'Tú decides si tiene sentido avanzar',
+        {
+          title: 'Revisamos tu caso',
+          desc: 'Analizamos cómo estás captando clientes hoy y dónde se rompe el proceso.',
+        },
+        {
+          title: 'Te decimos qué montaríamos primero',
+          desc: 'Una recomendación concreta, sin vaguedades, pensada para tu negocio.',
+        },
+        {
+          title: 'Tú decides si tiene sentido avanzar',
+          desc: 'Sin compromiso. Sin presión. Solo información útil.',
+        },
       ],
       successTitle: 'Solicitud recibida',
-      successDescription: 'Gracias. Revisaré tu caso y te responderé en un día laborable.',
+      successDescription:
+        'Gracias. Revisaré tu caso y te responderé en un día laborable.',
       resend: 'Enviar otra solicitud',
       fields: {
         nameLabel: 'Nombre',
@@ -280,12 +292,12 @@ const siteCopy = {
         companyLabel: 'Empresa',
         companyPlaceholder: 'Nombre de tu empresa',
         messageLabel: '¿Qué está fallando ahora mismo en tu captación o seguimiento?',
-        messagePlaceholder: 'Cuéntame qué está fallando o dónde se está perdiendo tiempo',
+        messagePlaceholder: 'Cuéntanos qué está fallando o dónde se está perdiendo tiempo',
       },
       privacyPrefix: 'He leído y acepto la',
       privacyLink: 'Política de privacidad',
-      submit: 'Solicitar diagnóstico gratuito',
-      legalNote: 'Nada de spam. Solo usaremos tus datos para responder a tu solicitud.',
+      submit: 'Solicitar diagnóstico gratuito →',
+      legalNote: 'Nada de spam. Tus datos solo se usan para responder a tu solicitud.',
       errors: {
         generic: 'Ha ocurrido un error. Vuelve a intentarlo en unos segundos.',
         unavailable: 'El formulario no está disponible ahora mismo. Vuelve a intentarlo más tarde.',
@@ -600,21 +612,33 @@ const siteCopy = {
       ],
     },
     diagnostic: {
-      title: 'Request a free diagnostic',
-      description: 'Tell me how a client comes in today and I will tell you where I would start.',
+      title: 'Request your free diagnostic',
+      description:
+        'Tell us how a client comes in today and we will tell you exactly where we would start to improve your lead capture system.',
       checklist: [
-        'Quick review of your current setup',
-        'Bottleneck detection',
-        'Clear recommendation on where to start',
-        'No sales pressure',
+        'Quick review of your website and current lead capture process',
+        'Detection of the points where opportunities are lost',
+        'Clear and straightforward recommendation on where to start',
+        'No sales pressure or aggressive follow-up',
       ],
+      stepsTitle: 'How it works',
       steps: [
-        'We review your case',
-        'We tell you what we would build first',
-        'You decide whether it makes sense to move forward',
+        {
+          title: 'We review your case',
+          desc: 'We analyze how you are capturing clients today and where the process breaks.',
+        },
+        {
+          title: 'We tell you what we would build first',
+          desc: 'A concrete recommendation, without vagueness, tailored to your business.',
+        },
+        {
+          title: 'You decide whether it makes sense to move forward',
+          desc: 'No commitment. No pressure. Just useful information.',
+        },
       ],
       successTitle: 'Request received',
-      successDescription: 'Thanks. I will review your case and reply within one business day.',
+      successDescription:
+        'Thanks. I will review your case and reply within one business day.',
       resend: 'Send another request',
       fields: {
         nameLabel: 'Name',
@@ -624,12 +648,12 @@ const siteCopy = {
         companyLabel: 'Company',
         companyPlaceholder: 'Your company name',
         messageLabel: 'What is failing right now in your lead capture or follow-up?',
-        messagePlaceholder: 'Tell me what is failing or where time is being lost',
+        messagePlaceholder: 'Tell us what is failing or where time is being lost',
       },
       privacyPrefix: 'I have read and accept the',
       privacyLink: 'Privacy policy',
-      submit: 'Request a free diagnostic',
-      legalNote: 'No spam. We will only use your data to reply to your request.',
+      submit: 'Request a free diagnostic →',
+      legalNote: 'No spam. Your data will only be used to reply to your request.',
       errors: {
         generic: 'An error occurred. Try again in a few seconds.',
         unavailable: 'The form is not available right now. Try again later.',

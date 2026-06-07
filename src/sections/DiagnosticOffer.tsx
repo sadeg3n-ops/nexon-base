@@ -273,6 +273,9 @@ export function DiagnosticOffer() {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="border-t border-white/5 pt-8"
             >
+              <h4 className="text-sm font-semibold tracking-wider text-gray-500 uppercase mb-6">
+                {copy.diagnostic.stepsTitle}
+              </h4>
               <ol className="relative border-s border-white/10 ml-3">
                 {copy.diagnostic.steps.map((step, i) => (
                   <motion.li 
@@ -284,7 +287,8 @@ export function DiagnosticOffer() {
                     className={`ms-8 ${i === 2 ? '' : 'mb-8'}`}
                   >
                     <span className="absolute flex items-center justify-center w-6 h-6 rounded-full -ms-[33px] bg-[#0a0a0b] border border-white/20 text-xs font-bold text-gray-400">{i + 1}</span>
-                    <h3 className="font-semibold text-white mb-1 transition-colors hover:text-ai-purple cursor-default">{step}</h3>
+                    <h3 className="font-semibold text-white mb-1 transition-colors hover:text-ai-purple cursor-default">{step.title}</h3>
+                    <p className="text-sm text-gray-400 mt-1 leading-relaxed">{step.desc}</p>
                   </motion.li>
                 ))}
               </ol>
