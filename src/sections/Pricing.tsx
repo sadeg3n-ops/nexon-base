@@ -116,18 +116,17 @@ export function Pricing() {
         >
           {/* Column 1: Modules */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-6">{copy.pricing.modulesTitle}</h3>
-            <ul className="space-y-4">
-              {copy.pricing.modules.slice(0, 4).map((mod, i) => (
-                <li key={i} className="flex justify-between border-b border-white/5 pb-2 transition-colors hover:border-white/20">
-                  <span className="text-gray-300">{mod}</span>
-                  <span className="text-gray-500 font-medium text-sm">{copy.pricing.askUs}</span>
+            <h3 className="text-xl font-semibold text-white mb-3">{copy.pricing.modulesTitle}</h3>
+            {(copy.pricing as any).modulesDescription && (
+              <p className="text-gray-400 text-sm mb-6">{(copy.pricing as any).modulesDescription}</p>
+            )}
+            <ul className="space-y-3">
+              {copy.pricing.modules.map((mod, i) => (
+                <li key={i} className="flex justify-between items-start border-b border-white/5 pb-3 transition-colors hover:border-white/20 gap-4">
+                  <span className="text-gray-300 text-sm leading-snug">{mod}</span>
+                  <span className="text-gray-500 font-medium text-xs shrink-0 pt-0.5">→ {copy.pricing.askUs}</span>
                 </li>
               ))}
-              <li className="flex justify-between transition-colors hover:text-white">
-                <span className="text-gray-300">{copy.pricing.modules[4]}</span>
-                <span className="text-gray-500 font-medium text-sm">{copy.pricing.askUs}</span>
-              </li>
             </ul>
           </div>
 
@@ -139,9 +138,8 @@ export function Pricing() {
             </p>
             <ul className="space-y-3">
               {copy.pricing.maintenanceFeatures.map((feature, i) => (
-                <li key={i} className="flex gap-3 text-sm text-gray-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-ai-purple/50 mt-2 absolute w-1.5 h-1.5 rounded-full animate-pulse transition-all"></span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-ai-blue mt-2"></span>
+                <li key={i} className="flex gap-3 text-sm text-gray-300 items-start">
+                  <span className="w-1.5 h-1.5 rounded-full bg-ai-purple mt-1.5 shrink-0"></span>
                   {feature}
                 </li>
               ))}

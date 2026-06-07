@@ -167,15 +167,16 @@ const siteCopy = {
       availability: 'Consultar disponibilidad',
       note: 'También puedes empezar por la web y añadir lo demás más adelante.',
       modulesTitle: 'Módulos opcionales',
+      modulesDescription: 'Añade solo lo que tu negocio necesita, cuando lo necesita. Cada módulo se integra sobre la base sin rehacerlo todo.',
       askUs: 'Consultar',
-      maintenanceTitle: 'Mantenimiento y soporte',
+      maintenanceTitle: 'Mantenimiento y soporte técnico',
       maintenanceDescription:
         'Para que el sistema siga funcionando sin que tengas que ocuparte de la parte técnica.',
       maintenanceFeatures: [
-        'Seguridad y soporte',
-        'Copias de seguridad',
-        'Mantenimiento del sistema',
-        'Integraciones y pequeños cambios',
+        'Seguridad web y soporte continuo',
+        'Copias de seguridad automáticas',
+        'Mantenimiento y actualizaciones del sistema',
+        'Integraciones y ajustes sobre lo ya construido',
       ],
       packs: [
         {
@@ -214,11 +215,11 @@ const siteCopy = {
         },
       ],
       modules: [
-        'Posicionamiento SEO',
-        'Seguimiento de oportunidades',
-        'Reservas online',
-        'Emails automáticos',
-        'Pagos online',
+        'Posicionamiento SEO — Atrae clientes desde Google con una estrategia de SEO local o nacional',
+        'Seguimiento de oportunidades — Gestión de contactos y clientes potenciales en un solo lugar',
+        'Reservas online — Sistema de reservas integrado en tu web, sin gestión manual',
+        'Email marketing automatizado — Secuencias automáticas para nutrir contactos y recuperar oportunidades',
+        'Pagos online — Cobros integrados en el proceso de reserva o captación',
       ],
     },
     faq: {
@@ -510,15 +511,16 @@ const siteCopy = {
       availability: 'Check availability',
       note: 'You can also start with the website and add the rest later.',
       modulesTitle: 'Optional modules',
+      modulesDescription: 'Add only what your business needs, when it needs it. Each module integrates on top of the base without rebuilding everything.',
       askUs: 'Ask us',
-      maintenanceTitle: 'Maintenance and support',
+      maintenanceTitle: 'Maintenance and technical support',
       maintenanceDescription:
         'So the system keeps working without you having to deal with the technical side.',
       maintenanceFeatures: [
-        'Security and support',
-        'Backups',
-        'System maintenance',
-        'Integrations and small changes',
+        'Web security and ongoing support',
+        'Automatic backups',
+        'System maintenance and updates',
+        'Integrations and adjustments on what is already built',
       ],
       packs: [
         {
@@ -557,11 +559,11 @@ const siteCopy = {
         },
       ],
       modules: [
-        'SEO Optimization',
-        'Opportunity tracking',
-        'Online bookings',
-        'Automated emails',
-        'Online payments',
+        'SEO Optimization — Attract clients from Google with a local or national SEO strategy',
+        'Opportunity tracking — Contact and lead management in one place',
+        'Online bookings — Booking system integrated into your website, no manual management',
+        'Automated email marketing — Automatic sequences to nurture contacts and recover opportunities',
+        'Online payments — Payments integrated into the booking or lead capture process',
       ],
     },
     faq: {
