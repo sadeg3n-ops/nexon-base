@@ -18,6 +18,10 @@ export default {
         'ai-blue': '#2563EB',
         'ai-purple': '#7C3AED',
         'ai-dark': '#0a0a0b',
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
       }
     },
   },
