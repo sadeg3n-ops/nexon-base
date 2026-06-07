@@ -66,16 +66,16 @@ const siteCopy = {
           copy: 'Página clara para que contactar sea fácil.',
         },
         {
+          title: 'Posicionamiento SEO',
+          copy: 'Atrae visitas de clientes con intención de compra.',
+        },
+        {
           title: 'Seguimiento de oportunidades',
           copy: 'Visibilidad sobre cada contacto y el siguiente paso.',
         },
         {
           title: 'Reservas online',
           copy: 'Reservas más fáciles, más tiempo para el equipo.',
-        },
-        {
-          title: 'Posicionamiento SEO',
-          copy: 'Atrae visitas de clientes con intención de compra.',
         },
         {
           title: 'Automatizaciones y pagos',
@@ -114,16 +114,16 @@ const siteCopy = {
           text: 'Página clara para que el cliente contacte fácil y tu equipo reciba mejor cada oportunidad.',
         },
         {
+          title: 'Posicionamiento SEO',
+          text: 'Atrae visitas de clientes que ya buscan tus servicios de forma activa.',
+        },
+        {
           title: 'Seguimiento de oportunidades',
           text: 'Visibilidad sobre cada contacto, su estado y el siguiente paso.',
         },
         {
           title: 'Reservas online',
           text: 'Menos fricción al reservar, más tiempo para el equipo.',
-        },
-        {
-          title: 'Posicionamiento SEO',
-          text: 'Atrae visitas de clientes que ya buscan tus servicios de forma activa.',
         },
         {
           title: 'Automatizaciones',
@@ -190,9 +190,9 @@ const siteCopy = {
           text: 'Para negocios que necesitan más orden, seguimiento, reservas y SEO.',
           includes: [
             'Web de captación',
+            'Posicionamiento SEO básico',
             'Seguimiento de oportunidades',
-            'Reservas online',
-            'Posicionamiento SEO básico'
+            'Reservas online'
           ],
         },
         {
@@ -201,17 +201,17 @@ const siteCopy = {
           text: 'La opción más completa para captar, ordenar, posicionar y automatizar.',
           includes: [
             'Web de captación',
+            'Posicionamiento SEO avanzado',
             'Seguimiento de oportunidades',
             'Reservas online',
-            'Posicionamiento SEO avanzado',
             'Emails automáticos y pagos online',
           ],
         },
       ],
       modules: [
+        'Posicionamiento SEO',
         'Seguimiento de oportunidades',
         'Reservas online',
-        'Posicionamiento SEO',
         'Emails automáticos',
         'Pagos online',
       ],
@@ -404,16 +404,16 @@ const siteCopy = {
           copy: 'A clear page that makes it easy to get in touch.',
         },
         {
+          title: 'SEO Optimization',
+          copy: 'Attract visits from customers with buying intent.',
+        },
+        {
           title: 'Opportunity tracking',
           copy: 'Visibility into every contact and the next step.',
         },
         {
           title: 'Online bookings',
           copy: 'Easier bookings, more time for the team.',
-        },
-        {
-          title: 'SEO Optimization',
-          copy: 'Attract visits from customers with buying intent.',
         },
         {
           title: 'Automations and payments',
@@ -452,16 +452,16 @@ const siteCopy = {
           text: 'A clear page so the client can get in touch easily and your team can receive each opportunity better.',
         },
         {
+          title: 'SEO Optimization',
+          text: 'Attract traffic from customers actively searching for your services.',
+        },
+        {
           title: 'Opportunity tracking',
           text: 'Visibility into every contact, their status and the next step.',
         },
         {
           title: 'Online bookings',
           text: 'Less friction when booking, more time for the team.',
-        },
-        {
-          title: 'SEO Optimization',
-          text: 'Attract traffic from customers actively searching for your services.',
         },
         {
           title: 'Automations',
@@ -528,9 +528,9 @@ const siteCopy = {
           text: 'For businesses that need more order, follow-up, bookings and SEO.',
           includes: [
             'Lead website',
+            'Basic SEO optimization',
             'Opportunity tracking',
-            'Online bookings',
-            'Basic SEO optimization'
+            'Online bookings'
           ],
         },
         {
@@ -539,17 +539,17 @@ const siteCopy = {
           text: 'The most complete option to capture, organize, rank and automate.',
           includes: [
             'Lead website',
+            'Advanced SEO optimization',
             'Opportunity tracking',
             'Online bookings',
-            'Advanced SEO optimization',
             'Automated emails and online payments',
           ],
         },
       ],
       modules: [
+        'SEO Optimization',
         'Opportunity tracking',
         'Online bookings',
-        'SEO Optimization',
         'Automated emails',
         'Online payments',
       ],

@@ -13,25 +13,25 @@ export function SystemLayers() {
       hoverBorder: 'hover:border-ai-purple/30 hover:shadow-[0_0_25px_-12px_rgba(124,58,237,0.25)]'
     },
     {
-      icon: <Route className="text-ai-blue" size={32} />,
+      icon: <TrendingUp className="text-amber-500" size={32} />,
       title: copy.systemLayers.layers[1].title,
       text: copy.systemLayers.layers[1].text,
+      color: 'bg-amber-500/10 border-amber-500/20',
+      hoverBorder: 'hover:border-amber-500/30 hover:shadow-[0_0_25px_-12px_rgba(245,158,11,0.25)]'
+    },
+    {
+      icon: <Route className="text-ai-blue" size={32} />,
+      title: copy.systemLayers.layers[2].title,
+      text: copy.systemLayers.layers[2].text,
       color: 'bg-ai-blue/10 border-ai-blue/20',
       hoverBorder: 'hover:border-ai-blue/30 hover:shadow-[0_0_25px_-12px_rgba(37,99,235,0.25)]'
     },
     {
       icon: <CalendarCheck className="text-emerald-500" size={32} />,
-      title: copy.systemLayers.layers[2].title,
-      text: copy.systemLayers.layers[2].text,
-      color: 'bg-emerald-500/10 border-emerald-500/20',
-      hoverBorder: 'hover:border-emerald-500/30 hover:shadow-[0_0_25px_-12px_rgba(16,185,129,0.25)]'
-    },
-    {
-      icon: <TrendingUp className="text-amber-500" size={32} />,
       title: copy.systemLayers.layers[3].title,
       text: copy.systemLayers.layers[3].text,
-      color: 'bg-amber-500/10 border-amber-500/20',
-      hoverBorder: 'hover:border-amber-500/30 hover:shadow-[0_0_25px_-12px_rgba(245,158,11,0.25)]'
+      color: 'bg-emerald-500/10 border-emerald-500/20',
+      hoverBorder: 'hover:border-emerald-500/30 hover:shadow-[0_0_25px_-12px_rgba(16,185,129,0.25)]'
     },
     {
       icon: <Zap className="text-pink-500" size={32} />,
