@@ -91,8 +91,8 @@ const siteCopy = {
       positive: [
         'Tu web no está diseñada para convertir visitas en clientes',
         'Recibes consultas por varios canales (web, WhatsApp, redes) y pierdes el hilo',
-        'El seguimiento de clientes depende de memoria, excel, hojas de calculo o mensajes de WhatsApp',
-        'Quieres un sistema de captación profesional para crecer de forma organizada.',
+        'El seguimiento de clientes depende de memoria, Excel, hojas de cálculo o mensajes de WhatsApp',
+        'Quieres un sistema de captación profesional para crecer de forma organizada',
       ],
       negativeTitle: 'Esto no es para ti si',
       negative: [
@@ -103,10 +103,10 @@ const siteCopy = {
       ],
     },
     systemLayers: {
-      title: 'Empieza por prioritario. Amplía cuando el negocio lo pida.',
+      title: 'Empieza por lo prioritario. Amplía cuando el negocio lo pida.',
       description:
         'No hace falta montarlo todo a la vez. Construimos primero la web y el sistema de captación que más resultado tiene para tu negocio, y añadimos el resto cuando de verdad tiene sentido.',
-      addOnsTitle: 'Ampliaciones disponibles cuando tenga sentido',
+      addOnsTitle: 'Ampliaciones disponibles cuando tengan sentido',
       addOns: [
         'Emails automáticos para nutrir y recuperar contactos',
         'Pagos online integrados en el proceso de reserva o captación',
@@ -162,7 +162,7 @@ const siteCopy = {
       ],
     },
     pricing: {
-      title: 'Nuestros Servicios',
+      title: 'Nuestros servicios',
       description: 'Tres puntos de partida para negocios en España que quieren captar mejor, gestionar más oportunidades y crecer con un sistema optimizado.',
       availability: 'Consultar disponibilidad',
       note: 'También puedes empezar por la web y añadir lo demás más adelante.',
